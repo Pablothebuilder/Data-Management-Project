@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XML Viewer · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="app-nav"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>Grocery List XML</h1>
+        <p>This page reads the XML document from the web service and displays it. The document follows <a href="/schemas/grocery-list.xsd" target="_blank" rel="noopener">grocery-list.xsd</a>.</p>
+      </div>
+      <div class="actions">
+        <label class="inline">List <select id="list-select" aria-label="Grocery list"></select></label>
+        <a class="btn btn-ghost" id="raw-link" target="_blank" rel="noopener">Open raw XML</a>
+      </div>
+    </div>
+    <div class="card" id="parsed"></div>
+    <div class="card">
+      <h2>Raw XML</h2>
+      <pre class="sql" id="raw"></pre>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/xml-viewer.js"></script>
+</body>
+</html>

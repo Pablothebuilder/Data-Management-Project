@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recipes · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="app-nav"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>Recipes</h1>
+        <p>Calories and cost are calculated from the ingredient catalog. Use <strong>Plan</strong> to add a recipe to your meal plan.</p>
+      </div>
+      <div class="actions">
+        <span id="export"></span>
+        <button class="btn writer-only" id="new-recipe" type="button">Add my own recipe</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="filters">
+        <label>Search <input id="f-q" type="search" placeholder="Recipe name"></label>
+        <label>Contains ingredient <input id="f-ing" placeholder="Any ingredient"></label>
+        <label>Max prep time (min) <input id="f-prep" type="number" min="1" step="1"></label>
+        <label>Max cost per serving ($) <input id="f-cost" type="number" min="0" step="0.25"></label>
+        <label>Sort by
+          <select id="f-sort">
+            <option value="title">Name</option>
+            <option value="match" class="writer-only">Most ingredients in my pantry</option>
+            <option value="cost">Cheapest per serving</option>
+            <option value="calories">Fewest calories</option>
+            <option value="protein">Most protein</option>
+            <option value="prep">Quickest</option>
+          </select></label>
+      </div>
+      <div class="filters">
+        <label class="inline"><input id="f-budget" type="checkbox"> Budget-friendly only</label>
+        <label class="inline writer-only"><input id="f-mine" type="checkbox"> My recipes only</label>
+      </div>
+      <div id="table"></div>
+      <p class="muted small">"Budget-friendly" means the whole recipe costs no more than one day of any user's weekly budget (View 2).
+        "In pantry" is the share of the recipe's ingredients you already have enough of.</p>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/recipes.js"></script>
+</body>
+</html>

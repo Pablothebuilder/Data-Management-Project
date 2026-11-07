@@ -1,0 +1,28 @@
+{
+  "name": "nutricart-smartpantry-backend",
+  "version": "1.0.0",
+  "description": "NutriCart SmartPantry - Node.js/Express REST API and web server",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:reset": "node scripts/db-reset.js",
+    "test": "node --test --test-concurrency=1 test/api.test.js",
+    "check": "node scripts/check-frontend.js"
+  },
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.15",
+    "chart.js": "^4.6.1",
+    "dotenv": "^18.0.9",
+    "express": "^4.22.3",
+    "express-session": "^1.19.0",
+    "pdfkit": "^0.20.2",
+    "pg": "^8.23.1"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=18.17"
+  }
+}

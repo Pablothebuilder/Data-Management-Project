@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="app-nav"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>User Management</h1>
+        <p>Create accounts, change roles and budgets, reset passwords and remove users. Activity columns come from View 10.</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="new-user" type="button">New user</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="filters">
+        <label>Search <input id="f-q" type="search" placeholder="Name or email"></label>
+        <label>Role <select id="f-role"><option value="">All roles</option><option>Admin</option><option>User</option><option>Guest</option></select></label>
+        <label>Sort by <select id="f-sort"><option value="id">ID</option><option value="name">Name</option><option value="email">Email</option><option value="role">Role</option><option value="budget">Budget</option></select></label>
+      </div>
+      <div id="table"></div>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

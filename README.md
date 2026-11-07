@@ -1,40 +1,185 @@
 # NutriCart SmartPantry
 
-NutriCart SmartPantry is a school project for planning a pantry and meal management application. This repository is being prepared for **Phase 2 planning**. Design work and implementation are not yet complete.
+NutriCart SmartPantry is a web app that helps a household plan meals, keep track of the food it already has, and shop on a budget. You record what's in your pantry, plan your meals for the week, and the app builds a grocery list of **only what you are missing**, priced against your weekly budget. Calorie targets and nutrition are tracked along the way.
 
-## Project status
+It is the term project for SOFE 3700U Data Management Systems (Group 13, Fall 2026). The app runs on a PostgreSQL database, and **all 10 database views from Phase II drive features of the app**, not just a report page.
 
-- Phase 1 proposal: add the approved proposal to `docs/phase-1-proposal/` when ready.
-- Phase 2: planning and design are in progress. Add the report and diagrams to `docs/phase-2-design/` after they are prepared.
-- Phase 3: reserved for the final report and presentation in `docs/phase-3-final/`.
-- Application code and database scripts have not been created yet.
+| Document | What it covers |
+|---|---|
+| [CONTRIBUTING.md](CONTRIBUTING.md) | **For teammates editing the code:** setup, how the pieces fit together, where everything is, how to add an endpoint/page/view, rules, Git workflow |
+| [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | How to use the app, step by step (new user, pantry, recipes, meal plan, grocery list, snacks) |
+| [docs/COURSE_REQUIREMENTS.md](docs/COURSE_REQUIREMENTS.md) | Every course requirement and the feature and file that satisfies it, including where each of the 10 views is used |
+| [docs/IMPLEMENTATION_NOTES.md](docs/IMPLEMENTATION_NOTES.md) | Design and technology decisions, bugs found and fixed, known limitations |
 
-The `.gitkeep` files preserve planned, currently empty folders in Git. Replace or remove them as real project files are added.
+---
 
-## Planned repository areas
+## What the app does
 
-- `docs/` — academic reports, diagrams, and presentation materials.
-- `database/` — planned schema, sample data, required views, and optional seed data.
-- `backend/` — planned API and service code.
-- `frontend/` — planned browser interface and static assets.
+| Page | Purpose | Views used |
+|---|---|---|
+| **Dashboard** | Today's calories vs your target, light snack ideas that fit, items running low, calories for the week, highest-protein recipes, most-planned ingredients. New users see a getting-started checklist | 1, 2, 3, 6, 9, 10 |
+| **Pantry** | Record what you have. See what will run out before your planned meals and what your pantry is worth by category | 3, 8 |
+| **Recipes** | Browse and filter recipes with calories, protein and cost per serving. Add your own and plan them straight away | 2 |
+| **Meal Planner** | A day-by-meal table for the next 7 days. Mark meals as *Cooked* to use up pantry stock | 1 |
+| **Grocery List** | Step 1: choose the days. Step 2: review needed minus pantry. Step 3: shop, tick items off, then complete the list to restock the pantry | 5, 7 |
+| **Ingredients** | The shared ingredient catalog, with how many recipes use each one. Import real products from Open Food Facts | 4 |
+| **Reports** | All 10 views as tables, with their SQL and where each is used in the app | 1-10 |
+| **Admin** | User management with activity per user | 10 |
 
-## Setup and execution
+There are three roles. **User**s manage their own data, **Admin**s can also manage users and the shared catalog, and **Guest**s can browse recipes, ingredients and the catalog reports without an account.
 
-There is no runnable application yet, so no installation or execution commands are available at this planning stage. Once the team chooses and implements the stack, update this section with the exact prerequisites and commands. The current outline is:
+## Technology
 
-1. Install the selected runtime and database software.
-2. Clone this private repository and enter the project directory.
-3. Copy `backend/.env.example` to `backend/.env` and fill in local database/API credentials. Never commit `.env` or real credentials.
-4. Install the backend dependencies using the package manager selected by the team.
-5. Create the database and apply the scripts in `database/` in the documented order.
-6. Start the backend and frontend using the commands documented here after implementation.
+| Layer | Technology |
+|---|---|
+| Frontend | HTML, CSS and plain JavaScript (Fetch/AJAX), with Chart.js for charts |
+| Backend | Node.js 18.17+ and Express (REST/JSON API, sessions, PDF export with pdfkit) |
+| Database | PostgreSQL. By default this is the embedded **PGlite** engine, so nothing extra needs installing. A regular PostgreSQL server also works |
+| External APIs | Open Food Facts (product nutrition) and Open Prices (product prices). Both are free and need no key |
 
-These are future setup steps, not currently executable instructions.
+---
+
+## Installing and running
+
+### Prerequisites
+- **Node.js 18.17 or newer** from <https://nodejs.org>. Check with `node -v`.
+- Internet access for `npm install` and for the Open Food Facts import. Everything else works offline.
+
+### Windows
+
+```bash
+cd "C:\path\to\Data Managment Project\backend"
+```
+
+```bash
+npm install
+```
+
+```bash
+copy .env.example .env
+```
+
+```bash
+npm start
+```
+
+### Linux / macOS
+
+```bash
+cd "/path/to/Data Managment Project/backend"
+```
+
+```bash
+npm install
+```
+
+```bash
+cp .env.example .env
+```
+
+```bash
+npm start
+```
+
+Then open **<http://localhost:3000>**. On first start the database is created and filled with sample data automatically.
+
+### Demo accounts (sample data)
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@nutricart.test` | `Admin123!` |
+| User | `sam@nutricart.test` (also `priya@`, `marcus@`, `jordan@`, `nina@`) | `User123!` |
+| Guest account | `guest@nutricart.test` | `Guest123!` |
+
+You can also click **Create account** to sign up as a new user, which is the best way to see the full workflow, or **Continue as guest** to browse.
+
+### Commands (run inside `backend/`)
+
+| Command | What it does |
+|---|---|
+| `npm start` | Start the app on port 3000 (or `PORT` from `.env`) |
+| `npm run dev` | Start and restart automatically when files change |
+| `npm run db:reset` | Delete and rebuild the database from the SQL files. Sample meal plans are dated relative to today, so **run this before a demo** |
+| `npm test` | Run the 14 automated API tests on a temporary in-memory database |
+| `npm run check` | Check every frontend script for syntax errors |
+
+### Using a PostgreSQL server instead (optional)
+1. Create a database, for example: `psql -U postgres -c "CREATE DATABASE nutricart;"`
+2. In `backend/.env`, set `DATABASE_URL=postgres://postgres:yourpassword@localhost:5432/nutricart`
+3. Run `npm start`. The tables, views and sample data are created on first start. To load the SQL by hand instead, run in order: `database/schema.sql`, `extensions.sql`, `views.sql`, `seeders/seed.sql`.
+
+### Settings (`backend/.env`)
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PORT` | `3000` | Web server port |
+| `SESSION_SECRET` | random each run | Signs the login cookie. Set it so logins survive restarts |
+| `DATABASE_URL` | empty | PostgreSQL server connection. Leave it empty to use the embedded database |
+| `PGLITE_DATA_DIR` | `backend/.data/pglite` | Where the embedded database keeps its files |
+| `OFF_USER_AGENT` | NutriCartSmartPantry/1.0 | Name sent to Open Food Facts, which asks clients to identify themselves |
+| `EXTERNAL_TIMEOUT_MS` | `10000` | Time limit for Open Food Facts calls |
+
+### Troubleshooting
+- **"Port 3000 is already in use"**: set `PORT=3001` in `backend/.env`.
+- **"Could not connect to the database"**: check `DATABASE_URL`, or delete it to use the embedded database.
+- **"The database files are damaged" or "no schema has been selected to create in"**: stop the server and run `npm run db:reset`. This deletes and rebuilds the embedded database with the sample data.
+- **`npm run db:reset` says the files are in use**: stop the running server first (Ctrl+C in its terminal).
+- **Open Food Facts search fails**: the service is unreachable. The rest of the app keeps working.
+- **Planner or dashboard looks empty**: run `npm run db:reset` to re-date the sample data to today.
+
+---
+
+## Project structure
+
+```
+backend/
+  src/
+    app.js, server.js      Express setup and entry point
+    config/                settings, database connection (PostgreSQL or PGlite), database setup
+    middleware/            login/role checks, error handling
+    routes/                api.js (REST/JSON endpoints), pages.js (HTML pages)
+    controllers/           one file per feature (auth, users, ingredients, recipes, pantry,
+                           meal plans, grocery lists, views, dashboard stats, external API, export)
+    services/              grocery list logic, Open Food Facts client, CSV/PDF export,
+                           XML output, view registry
+    utils/                 input validation, password hashing, error types
+  test/api.test.js         automated tests
+database/
+  schema.sql               Phase II tables (unchanged)
+  extensions.sql           columns and table added for Phase III
+  views.sql                the 10 views
+  seeders/seed.sql         sample data
+frontend/
+  views/*.html             one HTML file per page
+  public/js/*.js           one script per page, plus common.js (shared helpers)
+  public/css/style.css
+  public/schemas/grocery-list.xsd
+docs/                      user guide, requirements mapping, implementation notes
+```
+
+## REST API summary
+
+Everything is under `/api` and uses JSON. All endpoints except the login ones need a logged-in session. Errors look like `{ "error": { "status", "message", "details" } }`.
+
+| Area | Endpoints |
+|---|---|
+| Login | `POST /auth/login`, `/auth/register`, `/auth/guest`, `/auth/logout`, `GET /auth/me` |
+| My account | `GET /users/me`, `PUT /users/me` |
+| Users (Admin) | `GET /users` (includes View 10 activity), `GET/PUT/DELETE /users/:id`, `POST /users` |
+| Ingredients | `GET /ingredients?q=&category=&maxPrice=&minProtein=&usage=used\|unused\|unstocked&sort=` (includes View 4), `GET /ingredients/categories`, `GET /ingredients/:id`, `GET /ingredients/:id/prices`, `POST /ingredients`, `PUT/DELETE /ingredients/:id` (Admin) |
+| Recipes | `GET /recipes?q=&ingredientId=&maxPrep=&maxCost=&budget=1&mine=1&sort=` (View 2 flag and filter), `GET /recipes/:id`, `POST /recipes`, `PUT/DELETE /recipes/:id` (author or Admin) |
+| Pantry | `GET /pantry?q=&category=&status=short\|empty&sort=`, `GET /pantry/shortfalls` (View 3), `GET /pantry/summary` (View 8), `POST /pantry`, `GET/PUT/DELETE /pantry/:id` |
+| Meal plans | `GET /meal-plans?from=&to=&mealType=&q=` (View 1), `POST /meal-plans`, `GET/PUT/DELETE /meal-plans/:id`, `POST /meal-plans/:id/cook` |
+| Grocery lists | `GET /grocery-lists?status=` (View 7), `GET /grocery-lists/preview?from=&to=` (View 5 flag), `POST /grocery-lists/generate`, `GET/PUT/DELETE /grocery-lists/:id`, `POST /grocery-lists/:id/complete`, `POST/PUT/DELETE /grocery-lists/:id/items[/:itemId]`, `GET /grocery-lists/:id/xml` |
+| Dashboard | `GET /stats/dashboard` (Views 1, 3, 6, 10), `GET /stats/overview` (Views 2, 9) |
+| Reports | `GET /views`, `GET /views/:name-or-number` |
+| Export | `GET /export/:dataset?format=csv\|pdf` (pantry, ingredients, recipes, meal-plans, grocery-list&id=, or any view) |
+| Open Food Facts | `GET /external/products?q=`, `POST /external/import`, `POST /external/prices/:ingredientId` |
 
 ## Team workflow
 
-Use GitHub Issues to record tasks and defects. Work on a branch for each change, then open a pull request for teammate review before merging. Keep reports and diagrams in the relevant phase folder and avoid committing credentials or generated dependency/build folders.
+Track tasks and bugs in GitHub Issues. Use a branch per change and a pull request reviewed by a teammate. Never commit `.env`, `node_modules/` or `backend/.data/`. The full workflow is in [CONTRIBUTING.md](CONTRIBUTING.md#6-git-workflow).
 
-## Project license
+## License
 
-This is a private academic project. The accompanying `LICENSE` reserves copyright and does not grant a general license to reuse or redistribute the project. Follow any additional course or institution requirements.
+This is a private academic project. See `LICENSE`.

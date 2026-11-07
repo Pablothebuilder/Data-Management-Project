@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pantry · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="app-nav"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>My Pantry</h1>
+        <p>Everything you already have at home. Grocery lists only include what is missing from here.</p>
+      </div>
+      <div id="export"></div>
+    </div>
+
+    <div class="note">
+      Your pantry is updated in three ways:
+      (1) add or edit items on this page,
+      (2) completing a <a href="/grocery">grocery list</a> adds the items you bought,
+      (3) marking a meal as <em>Cooked</em> in the <a href="/planner">meal planner</a> uses up its ingredients.
+    </div>
+
+    <div class="card">
+      <h2>Add an item</h2>
+      <form id="add-form" novalidate>
+        <div class="row">
+          <label>Ingredient <span class="hint">start typing to see suggestions</span>
+            <input name="ingredient_name" required placeholder="e.g. Rolled Oats"></label>
+          <label>Quantity <input name="quantity_on_hand" type="number" min="0" step="0.01" required></label>
+          <label>Unit <span class="hint">set by the ingredient</span>
+            <input name="unit" maxlength="20" readonly tabindex="-1"></label>
+          <div><button class="btn" type="submit">Add to pantry</button></div>
+        </div>
+        <p class="muted small" id="add-hint"></p>
+        <p class="muted small">If the item is already in your pantry, the quantity is added to what you have. Can't find an ingredient? Add it on the <a href="/ingredients">Ingredients</a> page.</p>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Running low for planned meals</h2>
+        <a class="small" href="/grocery">Make a grocery list for these</a>
+      </div>
+      <div id="shortfalls"></div>
+    </div>
+
+    <div class="card">
+      <h2>What I have</h2>
+      <div class="filters">
+        <label>Search <input id="f-q" type="search" placeholder="Ingredient name"></label>
+        <label>Category <select id="f-category"><option value="">All categories</option></select></label>
+        <label>Show
+          <select id="f-status">
+            <option value="">All items</option>
+            <option value="short">Running low for planned meals</option>
+            <option value="empty">Out of stock</option>
+          </select></label>
+        <label>Sort by
+          <select id="f-sort">
+            <option value="name">Name</option>
+            <option value="category">Category</option>
+            <option value="quantity">Quantity</option>
+            <option value="value">Value</option>
+            <option value="updated">Last updated</option>
+          </select></label>
+      </div>
+      <p class="muted small" id="summary"></p>
+      <div id="table"></div>
+    </div>
+
+    <div class="card">
+      <h2>Pantry by category</h2>
+      <div id="categories"></div>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/pantry.js"></script>
+</body>
+</html>
