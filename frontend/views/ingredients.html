@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingredients · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="app-nav"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>Ingredient Catalog</h1>
+        <p>The shared list of ingredients that pantries, recipes and grocery lists are built from. Prices and calories are per unit.</p>
+      </div>
+      <div class="actions">
+        <span id="export"></span>
+        <button class="btn writer-only" id="new-ingredient" type="button">Add ingredient by hand</button>
+      </div>
+    </div>
+
+    <div class="card writer-only">
+      <div class="card-head">
+        <h2>Import from Open Food Facts</h2>
+        <span class="muted small">Search a real product database and add the product to the catalog</span>
+      </div>
+      <form id="off-form" class="filters" novalidate>
+        <label style="max-width:none;flex:3">Product search <input name="q" required minlength="2" maxlength="100" placeholder="e.g. rolled oats, greek yogurt, peanut butter"></label>
+        <button class="btn" type="submit">Search</button>
+      </form>
+      <div id="off-results"></div>
+    </div>
+
+    <div class="card">
+      <div class="filters">
+        <label>Search <input id="f-q" type="search" placeholder="Name"></label>
+        <label>Category <select id="f-category"><option value="">All</option></select></label>
+        <label>Max price / unit ($) <input id="f-price" type="number" min="0" step="0.1"></label>
+        <label>Min protein (g) <input id="f-protein" type="number" min="0" step="1"></label>
+        <label>Usage
+          <select id="f-usage">
+            <option value="">All</option>
+            <option value="used">Used in at least one recipe</option>
+            <option value="unused">Not used in any recipe</option>
+            <option value="unstocked">Needed by recipes, nobody has it</option>
+          </select></label>
+        <label>Sort by
+          <select id="f-sort">
+            <option value="name">Name</option><option value="category">Category</option><option value="price">Price</option>
+            <option value="calories">Calories</option><option value="protein">Protein</option><option value="usage">Most used</option>
+          </select></label>
+      </div>
+      <div id="table"></div>
+      <p class="muted small">"Used in" and "Households" come from View 4 (ingredient usage overview, a FULL JOIN of pantry stock and recipe usage).</p>
+    </div>
+  </main>
+  <script src="/vendor/chart.umd.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/ingredients.js"></script>
+</body>
+</html>

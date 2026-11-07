@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="app-nav"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1 id="greeting">Dashboard</h1>
+        <p id="subtitle"></p>
+      </div>
+    </div>
+
+    <!-- New users: checklist built from View 10 (user activity summary) -->
+    <div class="card hidden writer-only" id="getting-started">
+      <h2>Getting started</h2>
+      <p class="muted small">Work through these steps once. This box disappears when they are done.</p>
+      <ol class="steps" id="steps"></ol>
+    </div>
+
+    <!-- Today: View 6 + View 1 -->
+    <div class="grid grid-2 writer-only">
+      <div class="card">
+        <div class="card-head"><h2>Today</h2><span class="muted small" id="today-date"></span></div>
+        <div id="today-numbers"></div>
+        <div id="today-meals"></div>
+      </div>
+      <!-- View 3: pantry shortfalls -->
+      <div class="card">
+        <div class="card-head"><h2>Running low for planned meals</h2><a class="small" href="/grocery">Make a grocery list</a></div>
+        <div id="shortfalls"></div>
+      </div>
+    </div>
+
+    <!-- View 9: lowest-calorie recipes -->
+    <div class="card" style="margin-top:1rem">
+      <div class="card-head">
+        <h2>Light snack ideas</h2>
+        <span class="muted small" id="snack-hint"></span>
+      </div>
+      <div id="snacks"></div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card writer-only">
+        <div class="card-head"><h2>Calories planned, next 7 days</h2><span class="muted small" id="cal-target"></span></div>
+        <div class="chart-box"><canvas id="chart-calories" aria-label="Calories per day"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Highest-protein recipes</h2><span class="muted small">grams per serving</span></div>
+        <div class="chart-box"><canvas id="chart-protein" aria-label="Highest protein recipes"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Most-planned ingredients</h2><span class="muted small">across all users' meal plans</span></div>
+        <div class="chart-box"><canvas id="chart-popular" aria-label="Most planned ingredients"></canvas></div>
+      </div>
+    </div>
+  </main>
+  <script src="/vendor/chart.umd.min.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

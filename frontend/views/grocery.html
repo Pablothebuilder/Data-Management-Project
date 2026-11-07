@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grocery List · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="app-nav"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>Grocery List</h1>
+        <p>Builds a shopping list from your meal plan, minus what is already in your pantry.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Step 1: Choose the days you are shopping for</h2>
+      <form id="gen-form" novalidate>
+        <div class="row">
+          <label>From <input name="from" type="date" required></label>
+          <label>To <input name="to" type="date" required></label>
+          <label>Budget ($) <span class="hint">empty = your weekly budget</span>
+            <input name="max_budget" type="number" min="0" step="0.01"></label>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Step 2: Review what you need to buy</h2>
+      <div id="preview"></div>
+    </div>
+
+    <div class="card hidden" id="detail"></div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>My lists</h2>
+        <select id="f-status" aria-label="Filter lists by status" style="width:auto">
+          <option value="">All</option><option>Active</option><option>Completed</option><option>Archived</option>
+        </select>
+      </div>
+      <div id="lists"></div>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/grocery.js"></script>
+</body>
+</html>

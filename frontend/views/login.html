@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="brand">NutriCart SmartPantry</div>
+      <p class="tagline">Track your pantry, plan meals, and shop on a budget.</p>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" type="button" data-tab="login" role="tab">Log in</button>
+        <button class="tab" type="button" data-tab="register" role="tab">Create account</button>
+      </div>
+
+      <form id="login-form" novalidate>
+        <label>Email <input name="email" type="email" required maxlength="100" autocomplete="username"></label>
+        <label>Password <input name="password" type="password" required autocomplete="current-password"></label>
+        <button class="btn" type="submit">Log in</button>
+      </form>
+
+      <form id="register-form" class="hidden" novalidate>
+        <label>Full name <input name="name" required maxlength="100" autocomplete="name"></label>
+        <label>Email <input name="email" type="email" required maxlength="100" autocomplete="email"></label>
+        <label>Password <span class="hint">At least 8 characters</span>
+          <input name="password" type="password" required minlength="8" maxlength="100" autocomplete="new-password"></label>
+        <label>Confirm password <input name="confirm" type="password" required autocomplete="new-password"></label>
+        <div class="row">
+          <label>Weekly grocery budget ($) <input name="weekly_budget_limit" type="number" min="0" step="0.01" required value="75"></label>
+          <label>Daily calorie target <input name="target_calories" type="number" min="1" max="20000" step="1" placeholder="e.g. 2000"></label>
+        </div>
+        <button class="btn" type="submit">Create account</button>
+      </form>
+
+      <div class="divider">or</div>
+      <button id="guest-btn" class="btn btn-ghost" type="button" style="width:100%">Continue as guest (browse only)</button>
+
+      <div class="demo-accounts">
+        <strong>Demo accounts</strong> (click to fill):<br>
+        <button type="button" data-email="admin@nutricart.test" data-pw="Admin123!">Admin</button> ·
+        <button type="button" data-email="sam@nutricart.test" data-pw="User123!">User (Sam)</button> ·
+        <button type="button" data-email="priya@nutricart.test" data-pw="User123!">User (Priya)</button> ·
+        <button type="button" data-email="guest@nutricart.test" data-pw="Guest123!">Guest account</button>
+      </div>
+    </div>
+  </div>
+  <script src="/js/common.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>

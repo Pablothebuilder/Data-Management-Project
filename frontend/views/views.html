@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="app-nav"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>Reports (Database Views)</h1>
+        <p>The 10 SQL views from Phase II, run live against the database. Each one also powers a feature of the app, listed under "Used in the app".</p>
+      </div>
+    </div>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="card" id="view-card">
+      <div class="card-head">
+        <div>
+          <h2 id="view-title">Choose a view</h2>
+          <div class="muted small" id="view-req"></div>
+        </div>
+        <div class="actions" id="view-actions"></div>
+      </div>
+      <p id="view-desc"></p>
+      <p class="small"><strong>Used in the app:</strong></p>
+      <ul class="small" id="view-used"></ul>
+      <div class="filters">
+        <label>Filter rows <input id="f-q" type="search" placeholder="Any text in the row"></label>
+        <label>Sort by <select id="f-sort"></select></label>
+        <label>Order <select id="f-dir"><option value="asc">Ascending</option><option value="desc">Descending</option></select></label>
+      </div>
+      <div class="muted small" id="row-count" style="margin-bottom:.5rem"></div>
+      <div id="view-table"></div>
+      <details class="sql" style="margin-top:1rem"><summary>Show SQL</summary><pre class="sql" id="view-sql"></pre></details>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/views.js"></script>
+</body>
+</html>

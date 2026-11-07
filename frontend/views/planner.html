@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meal Planner · NutriCart SmartPantry</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="app-nav"></header>
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>Meal Planner</h1>
+        <p>Choose a recipe for each meal. When your week is planned, <a href="/grocery">make a grocery list</a> for anything you are missing.</p>
+      </div>
+      <span id="export"></span>
+    </div>
+
+    <div class="card" id="add-card">
+      <h2>Add a meal</h2>
+      <form id="plan-form" novalidate>
+        <div class="row">
+          <label>Date <input name="planned_date" type="date" required></label>
+          <label>Meal
+            <select name="meal_type" required>
+              <option>Breakfast</option><option>Lunch</option><option selected>Dinner</option><option>Snack</option>
+            </select></label>
+          <label>Recipe <select name="recipe_id" required><option value="">Choose a recipe...</option></select></label>
+          <div><button class="btn" type="submit">Add to plan</button></div>
+        </div>
+        <p class="muted small" id="recipe-hint">Tip: click "Add" in any cell of the table below to fill in the date and meal for you.
+          Can't find a recipe? <a href="/recipes">Add your own</a>.</p>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2 id="week-title">Next 7 days</h2>
+        <div class="actions">
+          <button class="btn btn-small btn-ghost" id="prev" type="button">Previous week</button>
+          <button class="btn btn-small btn-ghost" id="today" type="button">This week</button>
+          <button class="btn btn-small btn-ghost" id="next" type="button">Next week</button>
+        </div>
+      </div>
+      <div id="week"></div>
+      <p class="muted small"><strong>Cooked</strong> uses up the recipe's ingredients from your pantry and removes the meal from the plan.
+        <strong>Cheaper swap</strong> suggests cheaper recipes with similar calories.</p>
+    </div>
+
+    <div class="card">
+      <h2>Search planned meals</h2>
+      <div class="filters">
+        <label>Recipe name <input id="f-q" type="search" placeholder="e.g. oats"></label>
+        <label>From <input id="f-from" type="date"></label>
+        <label>To <input id="f-to" type="date"></label>
+        <label>Meal
+          <select id="f-type"><option value="">Any</option><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select></label>
+      </div>
+      <div id="results"></div>
+    </div>
+  </main>
+  <script src="/js/common.js"></script>
+  <script src="/js/planner.js"></script>
+</body>
+</html>

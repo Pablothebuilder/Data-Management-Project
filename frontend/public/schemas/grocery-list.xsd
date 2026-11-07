@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  XML Schema for the grocery list document produced by
+  GET /api/grocery-lists/{id}/xml  (NutriCart SmartPantry XML web service).
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <xs:simpleType name="moneyType">
+    <xs:restriction base="xs:decimal">
+      <xs:fractionDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="amountType">
+    <xs:simpleContent>
+      <xs:extension base="moneyType">
+        <xs:attribute name="currency" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="statusType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Active"/>
+      <xs:enumeration value="Completed"/>
+      <xs:enumeration value="Archived"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="itemType">
+    <xs:sequence>
+      <xs:element name="ingredient">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="category" type="xs:string"/>
+      <xs:element name="quantity">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:decimal">
+              <xs:attribute name="unit" type="xs:string" use="required"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="unitPrice" type="amountType"/>
+      <xs:element name="lineTotal" type="amountType"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+    <xs:attribute name="purchased" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="groceryList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="owner">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="createdAt" type="xs:dateTime"/>
+        <xs:element name="budget" type="amountType"/>
+        <xs:element name="items">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="item" type="itemType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="count" type="xs:nonNegativeInteger" use="required"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="summary">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="estimatedTotal" type="amountType"/>
+              <xs:element name="purchasedTotal" type="amountType"/>
+              <xs:element name="remainingBudget" type="amountType"/>
+              <xs:element name="overBudget" type="xs:boolean"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+      <xs:attribute name="status" type="statusType" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
