@@ -41,10 +41,7 @@ const NET_NEEDS_SQL = `
   SELECT n.ingredient_id, i.name, i.category, i.base_unit, n.needed,
          COALESCE(p.quantity_on_hand, 0) AS on_hand,
          n.needed - COALESCE(p.quantity_on_hand, 0) AS to_buy,
-         i.estimated_unit_price,
-         -- View 5 (EXCEPT): true when the ingredient is not in the pantry at all
-         EXISTS (SELECT 1 FROM v_ingredients_to_buy v
-                  WHERE v.user_id = $1 AND v.ingredient_id = n.ingredient_id) AS not_in_pantry
+         i.estimated_unit_price
     FROM needs n
     JOIN Ingredients i ON i.ingredient_id = n.ingredient_id
     LEFT JOIN PantryItems p ON p.user_id = $1 AND p.ingredient_id = n.ingredient_id

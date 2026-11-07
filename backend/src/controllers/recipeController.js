@@ -32,8 +32,6 @@ const RECIPE_SELECT = `
          COALESCE(ROUND(SUM(ri.required_quantity * i.protein_g) / COALESCE(NULLIF(r.servings, 0), 1), 1), 0) AS protein_per_serving,
          COALESCE(ROUND(SUM(ri.required_quantity * i.carbs_g) / COALESCE(NULLIF(r.servings, 0), 1), 1), 0) AS carbs_per_serving,
          COALESCE(ROUND(SUM(ri.required_quantity * i.fat_g) / COALESCE(NULLIF(r.servings, 0), 1), 1), 0) AS fat_per_serving,
-         -- View 2: is this recipe affordable within every user's daily budget?
-         EXISTS (SELECT 1 FROM v_budget_friendly_recipes b WHERE b.recipe_id = r.recipe_id) AS budget_friendly,
          -- share of this recipe's ingredients the current user already has enough of ($1 = user id or NULL)
          COALESCE(ROUND(100.0 * SUM(CASE WHEN p.quantity_on_hand >= ri.required_quantity THEN 1 ELSE 0 END)
                         / NULLIF(COUNT(ri.ingredient_id), 0), 0), 0) AS pantry_match_pct
@@ -49,7 +47,7 @@ const SORTABLE = {
   protein: 'protein_per_serving DESC', match: 'pantry_match_pct DESC, r.title',
 };
 
-// ?q=keyword&maxPrep=20&ingredientId=5&mine=1&budget=1&maxCost=3&sort=cost
+// ?q=keyword&maxPrep=20&ingredientId=5&mine=1&maxCost=3&sort=cost
 async function list(req, res) {
   const user = currentUser(req);
   const params = [user.user_id];
@@ -62,7 +60,6 @@ async function list(req, res) {
     where.push(`r.recipe_id IN (SELECT recipe_id FROM RecipeIngredients WHERE ingredient_id = $${params.length})`);
   }
   if (req.query.mine === '1' && user.user_id) where.push('r.created_by_user = $1');
-  if (req.query.budget === '1') where.push('r.recipe_id IN (SELECT recipe_id FROM v_budget_friendly_recipes)');
   if (Number(req.query.maxCost) > 0) {
     params.push(Number(req.query.maxCost));
     having.push(`COALESCE(SUM(ri.required_quantity * i.estimated_unit_price) / COALESCE(NULLIF(r.servings, 0), 1), 0) <= $${params.length}`);

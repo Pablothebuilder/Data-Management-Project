@@ -65,6 +65,7 @@ router.delete('/recipes/:id', requireWriter, h(recipes.remove));
 router.get('/pantry', requireWriter, h(pantry.list));
 router.get('/pantry/shortfalls', requireWriter, h(pantry.shortfalls));
 router.get('/pantry/summary', requireWriter, h(pantry.summary));
+router.get('/pantry/unplanned', requireWriter, h(pantry.unplanned));
 router.get('/pantry/:id', requireWriter, h(pantry.getOne));
 router.post('/pantry', requireWriter, h(pantry.create));
 router.put('/pantry/:id', requireWriter, h(pantry.update));
@@ -77,6 +78,7 @@ router.post('/meal-plans', requireWriter, h(plans.create));
 router.put('/meal-plans/:id', requireWriter, h(plans.update));
 router.delete('/meal-plans/:id', requireWriter, h(plans.remove));
 router.post('/meal-plans/:id/cook', requireWriter, h(plans.cook));
+router.get('/meal-plans/:id/swaps', requireWriter, h(plans.swaps));
 
 // --- Grocery lists ----------------------------------------------------------
 router.get('/grocery-lists', requireWriter, h(lists.list));

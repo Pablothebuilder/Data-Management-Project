@@ -1,5 +1,6 @@
 // Pantry page: add/edit/delete PantryItems, search and filter,
-// "running low" (View 3) and "by category" (View 8) tables.
+// "running low" (View 3), "not used by your meal plan" (View 5) and
+// "by category" (View 8) tables.
 (async () => {
   const { $, h, api, table, money, num, toast, showError, validateForm, showFieldErrors, debounce, confirmDialog } = App;
   await App.init();
@@ -81,6 +82,19 @@
     ], { empty: 'Nothing is running low. Ingredients you have none of at all are shown on the Grocery List page.' }));
   }
 
+  // View 5: v_unplanned_pantry_items
+  async function loadUnplanned() {
+    const { items } = await api('/pantry/unplanned');
+    $('#unplanned').replaceChildren(table(items, [
+      { key: 'ingredient_name', label: 'Ingredient' },
+      { key: 'quantity_on_hand', label: 'You have', class: 'num', render: (r) => `${num(r.quantity_on_hand)} ${r.unit}` },
+      { key: 'estimated_value', label: 'Value', class: 'num' },
+      { key: 'recipes_using', label: 'Use it in', render: (r) => (r.recipes_using
+        ? h('a', { href: `/recipes?ingredient=${r.ingredient_id}` }, `${r.recipes_using} recipe(s)`)
+        : h('span', {}, 'No recipe uses it yet. ', h('a', { href: '/recipes' }, 'Add your own'))) },
+    ], { empty: 'Everything in your pantry is used by an upcoming meal.' }));
+  }
+
   // View 8: v_pantry_value_by_category
   async function loadCategories() {
     const { categories: rows } = await api('/pantry/summary');
@@ -92,7 +106,7 @@
   }
 
   function refresh() {
-    Promise.all([loadItems(), loadShortfalls(), loadCategories()]).catch(showError);
+    Promise.all([loadItems(), loadShortfalls(), loadUnplanned(), loadCategories()]).catch(showError);
   }
 
   form.addEventListener('submit', async (e) => {

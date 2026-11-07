@@ -92,7 +92,7 @@ test('role-based access control', async () => {
   assert.equal((await guest.get('/api/ingredients')).status, 200);
   assert.equal((await guest.get('/api/pantry')).status, 403);
   assert.equal((await guest.post('/api/ingredients', {})).status, 403);
-  assert.equal((await guest.get('/api/views/v_budget_friendly_recipes')).status, 200);
+  assert.equal((await guest.get('/api/views/v_recipe_nutrition_profile')).status, 200);
   assert.equal((await guest.get('/api/views/v_pantry_shortfalls')).status, 403);
   assert.equal((await guest.get('/admin')).status, 302);
 
@@ -299,10 +299,15 @@ test('every view powers a real feature outside the Reports page', async () => {
   const { views } = (await sam.get('/api/views')).data;
   assert.ok(views.every((v) => v.usedIn.length > 0));
 
-  // View 2: budget-friendly recipe filter + flag
-  const budget = (await sam.get('/api/recipes?budget=1')).data.recipes;
-  assert.ok(budget.length > 0 && budget.every((r) => r.budget_friendly));
-  assert.ok(!budget.some((r) => r.title === 'Garlic Salmon with Rice'));
+  // View 2: cheaper swaps for a planned meal (cheaper, similar calories, different recipe)
+  const bowl = (await sam.get('/api/meal-plans')).data.plans.find((p) => p.recipe_title === 'Chicken & Broccoli Rice Bowl');
+  const { meal, swaps } = (await sam.get(`/api/meal-plans/${bowl.plan_id}/swaps`)).data;
+  assert.ok(swaps.some((s) => s.title === 'Pasta Pomodoro'));
+  assert.ok(swaps.every((s) => s.cost_per_serving < meal.cost_per_serving
+    && s.calories_per_serving >= Math.floor(meal.calories_per_serving * 0.6) && s.recipe_id !== meal.recipe_id));
+  assert.ok(!swaps.some((s) => s.title === 'Hard-Boiled Eggs'), 'a snack is not offered as a dinner swap');
+  const v2 = (await sam.get('/api/views/2')).data.rows;
+  assert.ok(v2.length > 0 && v2.every((r) => r.user_id === 2));
   // View 3: pantry shortfalls table + "short" filter agree
   const short = (await sam.get('/api/pantry/shortfalls')).data.shortfalls;
   const filtered = (await sam.get('/api/pantry?status=short')).data.items;
@@ -311,12 +316,16 @@ test('every view powers a real feature outside the Reports page', async () => {
   const unused = (await sam.get('/api/ingredients?usage=unused')).data.ingredients;
   assert.ok(unused.some((i) => i.name === 'Quinoa'));
   assert.ok(unused.every((i) => i.recipes_using === 0));
-  // View 5: preview flags ingredients not in the pantry at all
-  const today = new Date();
-  const iso = (dt) => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
-  const prev = (await sam.get(`/api/grocery-lists/preview?from=${iso(today)}&to=${iso(new Date(today.getTime() + 6 * 86400000))}`)).data.items;
-  assert.equal(prev.find((i) => i.name === 'Greek Yogurt').not_in_pantry, true);
-  assert.equal(prev.find((i) => i.name === 'Banana').not_in_pantry, false);
+  // View 5: pantry items no upcoming meal uses (Jordan has cheddar and quinoa but plans neither)
+  const jordan = client();
+  await jordan.login('jordan@nutricart.test', 'User123!');
+  const unplanned = (await jordan.get('/api/pantry/unplanned')).data.items;
+  assert.deepEqual(unplanned.map((i) => i.ingredient_name).sort(), ['Cheddar Cheese', 'Quinoa']);
+  assert.equal(unplanned.find((i) => i.ingredient_name === 'Cheddar Cheese').recipes_using, 2);
+  // planning a meal that uses cheddar removes it from the list
+  await jordan.post('/api/meal-plans', { recipe_id: 3, planned_date: new Date().toISOString().slice(0, 10), meal_type: 'Lunch' });
+  const after = (await jordan.get('/api/pantry/unplanned')).data.items;
+  assert.ok(!after.some((i) => i.ingredient_name === 'Cheddar Cheese'));
   // View 8: pantry by category
   const cats = (await sam.get('/api/pantry/summary')).data.categories;
   assert.ok(cats.length > 0 && cats.every((c) => c.item_count > 0));

@@ -82,7 +82,7 @@
     $('#snack-hint').textContent = `Recipes of ${snackMax} kcal or less per serving, lowest first.`
       + (canAdd && remaining !== null ? ` You have ${Math.max(remaining, 0)} kcal left today.` : '');
     $('#snacks').replaceChildren(table(rows, [
-      { key: 'title', label: 'Recipe', render: (r) => h('span', {}, r.title, r.budget_friendly ? h('span', { class: 'tag', title: 'View 2: affordable within every user\'s daily budget' }, 'budget-friendly') : null) },
+      { key: 'title', label: 'Recipe' },
       { key: 'calories_per_serving', label: 'kcal', class: 'num' },
       { key: 'protein_per_serving', label: 'Protein', class: 'num', render: (r) => `${num(r.protein_per_serving, 1)} g` },
       { key: 'cost_per_serving', label: 'Cost', class: 'num', render: (r) => money(r.cost_per_serving) },

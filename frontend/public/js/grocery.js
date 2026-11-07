@@ -1,7 +1,7 @@
 // Grocery list workflow:
-//   1. choose dates  2. review the preview (needed - pantry; View 5 flags items
-//   not in the pantry at all)  3. create the list, tick items off while shopping,
-//   then Complete to add the purchases to the pantry.
+//   1. choose dates  2. review the preview (needed - pantry; when over budget it
+//   points to the planner's cheaper swaps, View 2)  3. create the list, tick items
+//   off while shopping, then Complete to add the purchases to the pantry.
 // "My lists" uses View 7 (v_grocery_list_budget_status).
 (async () => {
   const { $, h, api, table, money, num, toast, showError, validateForm, formData, showFieldErrors, confirmDialog, isoDate, debounce } = App;
@@ -19,7 +19,10 @@
     return h('div', {},
       h('div', { class: `budget-bar ${cls}` }, h('span', { style: `width:${pct}%` })),
       h('p', { class: 'small' }, `Estimated ${money(total)} of a ${money(budget)} budget. `,
-        total > budget ? h('strong', { class: 'pill-bad' }, `Over budget by ${money(total - budget)}.`) : `${money(budget - total)} left.`));
+        total > budget
+          ? h('span', {}, h('strong', { class: 'pill-bad' }, `Over budget by ${money(total - budget)}.`),
+            ' Use ', h('a', { href: '/planner' }, 'Cheaper swap'), ' on your planned meals to bring the cost down.')
+          : `${money(budget - total)} left.`));
   }
 
   function rangeValid() {
@@ -39,7 +42,7 @@
       }
       $('#preview').replaceChildren(
         table(items, [
-          { key: 'name', label: 'Ingredient', render: (r) => h('span', {}, r.name, r.not_in_pantry ? h('span', { class: 'tag' }, 'not in pantry') : null) },
+          { key: 'name', label: 'Ingredient' },
           { key: 'needed', label: 'Needed by meals', class: 'num', render: (r) => `${num(r.needed)} ${r.base_unit}` },
           { key: 'on_hand', label: 'In pantry', class: 'num', render: (r) => `${num(r.on_hand)} ${r.base_unit}` },
           { key: 'to_buy', label: 'To buy', class: 'num', render: (r) => h('strong', {}, `${num(r.to_buy)} ${r.base_unit}`) },

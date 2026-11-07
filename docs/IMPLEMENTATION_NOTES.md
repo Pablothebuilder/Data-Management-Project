@@ -5,7 +5,7 @@ This is a log of the technical decisions made while building NutriCart SmartPant
 - The requirement-by-requirement mapping is in [COURSE_REQUIREMENTS.md](COURSE_REQUIREMENTS.md).
 - How to use the app is in [USER_GUIDE.md](USER_GUIDE.md).
 
-*Initial implementation: Nov 7, 2026. Revision 2 (same day): plain UI, all views in real features, workflow redesign, new dashboard.*
+*Initial implementation: Nov 7, 2026. Revision 2 (same day): plain UI, all views in real features, workflow redesign, new dashboard. Revision 3: views 2 and 5 redesigned to be useful to the user (section 3.1).*
 
 ---
 
@@ -69,9 +69,11 @@ Meal plans use `CURRENT_DATE + n`, so the views and dashboard always have curren
 
 ### 2.5 Notes on individual views
 - **View 1** uses LEFT JOINs for RecipeIngredients and Ingredients, so a meal is still listed if its recipe lost all its ingredients (bug 4).
-- **View 2** compares each recipe's cost against `ALL` *User*-role daily budgets (weekly budget ÷ 7).
+- **View 2** (`v_cheaper_swaps`) pairs every user with every recipe (`CROSS JOIN`), groups to get each recipe's cost per serving, and keeps it when it is cheaper than `ANY` of that user's upcoming planned meals. The subquery is correlated on `u.user_id` and grouped per planned meal. `ANY` of an empty set is false, so users with nothing planned get no rows.
+- **View 5** (`v_unplanned_pantry_items`) is the user's pantry `EXCEPT` the ingredients of their upcoming meals, joined back to PantryItems for quantities, plus a count of recipes that use each item.
 - **View 3** uses the correlated subquery in both `WHERE` and `SELECT`.
 - **View 4** FULL JOINs two aggregates. Since Almonds is now used by a recipe, *Quinoa* (stocked, not used) and *Greek Yogurt* (used, nobody stocks it) are the examples for the two unmatched sides.
+- `views.sql` starts with `DROP VIEW IF EXISTS` for the two revision-1 views it replaced, so a teammate's existing database is cleaned up on the next start without a reset.
 - **View 10** is admin-only because it shows every user's email.
 
 ---
@@ -82,12 +84,20 @@ Revision 1 used views 2, 4 and 5 only on the Reports page, and view 3 only as a 
 
 How the views are read:
 - The backend queries a view directly when the view already has the right shape. For example, the "My lists" table is `SELECT ... FROM v_grocery_list_budget_status WHERE user_id = $1`.
-- When a feature needs a **yes/no answer** from a view, it uses `EXISTS` or `IN` against the view:
-  - `budget_friendly` on recipes (View 2)
-  - the pantry "running low" filter (View 3)
-  - `not_in_pantry` on the grocery preview (View 5)
+- When a feature needs a **yes/no answer** from a view, it uses `IN` against the view: the pantry "running low" filter (View 3).
+- When a feature needs **rows for one item**, the controller filters the view further: cheaper swaps for one planned meal (View 2, filtered by that meal's cost and calories).
 - The Ingredients list **LEFT JOINs** View 4, so ingredients that neither side of the FULL JOIN includes still appear, labelled "Not used or stocked".
 - `services/viewRegistry.js` records `usedIn` for each view. The Reports page shows it, and a test checks that every view has at least one use.
+
+### 3.1 Revision 3: views 2 and 5 redesigned
+A review of how useful each view was found two weak ones:
+
+| View | Before | Problem | After |
+|---|---|---|---|
+| 2 (ANY/ALL + GROUP BY) | `v_budget_friendly_recipes`: recipes costing no more than the daily budget of **all** users | The `ALL` requirement drove the design. A user's "budget-friendly" label depended on *other people's* budgets | `v_cheaper_swaps`: recipes cheaper than **any** meal *you* planned. The planner offers them as one-click swaps, filtered to at least 60% of the original meal's calories (`SWAP_MIN_CALORIE_SHARE` in `mealPlanController.js`). The grocery page points there when you are over budget |
+| 5 (EXCEPT) | `v_ingredients_to_buy`: needed by meals `EXCEPT` in pantry | Repeated what the grocery preview already showed ("In pantry: 0") | `v_unplanned_pantry_items`: in pantry `EXCEPT` needed by meals, i.e. food no plan will use. This goes back to the Phase I goal of reducing food waste. The Pantry page lists it with links to recipes that use each item |
+
+Both keep the query type the course requires. Three pantry rows were added to the seed data (Jordan: cheddar and quinoa; Marcus: eggs) so View 5 has examples to show.
 
 ---
 
@@ -143,7 +153,7 @@ None of these helped a user decide anything.
 
 **Added or kept:**
 - **Today**: planned vs target calories and what is left (Views 1 and 6).
-- **Light snack ideas**: recipes of **≤ 300 kcal per serving**, lowest first (View 9), with a *budget-friendly* label (View 2), a "Fits today?" column, and an **Add as snack today** button. 300 kcal was chosen as a typical snack size. Without a cap, full meals filled the list (bug 8). The cap is `SNACK_MAX_KCAL` in `statsController.js`.
+- **Light snack ideas**: recipes of **≤ 300 kcal per serving**, lowest first (View 9), with a "Fits today?" column and an **Add as snack today** button. 300 kcal was chosen as a typical snack size. Without a cap, full meals filled the list (bug 8). The cap is `SNACK_MAX_KCAL` in `statsController.js`.
 - **Running low for planned meals** (View 3).
 - **Calories planned, next 7 days** chart (View 6).
 - **Highest-protein recipes** (View 9) and **most-planned ingredients** charts. Both were kept because the user found them useful.
@@ -204,7 +214,7 @@ None of these helped a user decide anything.
 `npm test` runs **14** end-to-end API tests against a fresh in-memory database. They cover:
 - login, registration and roles;
 - all 10 views returning rows;
-- the use of each view in its feature (budget filter, shortfalls, usage filter, not-in-pantry flag, pantry by category, admin activity);
+- the use of each view in its feature (cheaper swaps, shortfalls, usage filter, unplanned pantry items, pantry by category, admin activity);
 - CRUD for pantry, recipes and meal plans;
 - grocery list generation and completion;
 - XML, CSV and PDF output;

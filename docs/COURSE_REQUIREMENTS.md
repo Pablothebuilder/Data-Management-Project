@@ -12,7 +12,7 @@ Status key: **Done**, **Team** (not code: still to be produced by the team).
 |---|---|---|---|
 | A | Relational schema with SQL `CREATE TABLE` commands | Done | `database/schema.sql` (8 Phase II tables) + `database/extensions.sql` (Phase III additions) |
 | A | Graphical diagram of the relations | **Team** | Must include the Phase III additions: `Users.password_hash`, `Users.created_at`, `Ingredients.base_unit`, `Ingredients.off_product_code`, and the table `IngredientPriceHistory` (FK to Ingredients) |
-| B | Sample data, at least 6 tuples per relation, suited to the views | Done | `database/seeders/seed.sql`: 7 users, 22 ingredients, 11 recipes, 41 recipe ingredients, 22 pantry items, 23 meal plans, 7 grocery lists, 18 list items, 7 price observations. Dates are relative to today so the views always return rows |
+| B | Sample data, at least 6 tuples per relation, suited to the views | Done | `database/seeders/seed.sql`: 7 users, 22 ingredients, 11 recipes, 41 recipe ingredients, 25 pantry items, 23 meal plans, 7 grocery lists, 18 list items, 7 price observations. Dates are relative to today so the views always return rows |
 | C | 10 views with an English description and SQL | Done | `database/views.sql` (comment above each view). The Reports page shows the description and SQL too |
 | D | E-R diagram | **Team** | Same additions as Part A |
 
@@ -23,10 +23,10 @@ The course asks for pages that execute the 10 views. All 10 are shown as tables 
 | # | View | Required type | How the SQL meets it | Used in the app |
 |---|---|---|---|---|
 | 1 | `v_meal_plan_details` | Join of at least 3 tables | MealPlans ⋈ Users ⋈ Recipes ⟕ RecipeIngredients ⟕ Ingredients | **Meal Planner** week table and meal search; **Dashboard** "Today" meals; meal-plan CSV/PDF export |
-| 2 | `v_budget_friendly_recipes` | Nested query with ANY/ALL and GROUP BY | `GROUP BY recipe ... HAVING SUM(cost) <= ALL (SELECT weekly_budget_limit / 7 FROM Users WHERE role = 'User')` | **Recipes** "Budget-friendly only" filter and *budget-friendly* label; **Dashboard** snack ideas label |
+| 2 | `v_cheaper_swaps` | Nested query with ANY/ALL and GROUP BY | Users × Recipes, `GROUP BY` user and recipe, `HAVING cost_per_serving < ANY (SELECT cost per serving of that user's upcoming meals ... GROUP BY plan)` | **Meal Planner** *Cheaper swap* on every planned meal: cheaper recipes with similar calories, swapped in with one click. **Grocery List** over-budget hint points there |
 | 3 | `v_pantry_shortfalls` | Correlated nested query | The subquery in `WHERE` (and `SELECT`) references the outer `p.user_id` and `p.ingredient_id` | **Pantry** "Running low for planned meals" table and the *Show: Running low* filter; **Dashboard** running-low box |
 | 4 | `v_ingredient_usage_overview` | FULL JOIN | Pantry stock per ingredient `FULL JOIN` recipe usage per ingredient | **Ingredients** "Used in" and "Households" columns and the **Usage** filter (used / not used / needed but not stocked) |
-| 5 | `v_ingredients_to_buy` | Set operation (UNION/EXCEPT/INTERSECT) | (user, ingredient) pairs needed by upcoming meals `EXCEPT` pairs in the pantry | **Grocery List** step 2: the *not in pantry* flag on each item |
+| 5 | `v_unplanned_pantry_items` | Set operation (UNION/EXCEPT/INTERSECT) | (user, ingredient) pairs in the pantry `EXCEPT` pairs used by upcoming meals | **Pantry** "Not used by your meal plan" table, the food most likely to be wasted, with a link to recipes that use each item |
 | 6 | `v_daily_nutrition_summary` | Custom | Calories and macros per user per day | **Dashboard** "Calories planned, next 7 days" chart |
 | 7 | `v_grocery_list_budget_status` | Custom | Per-list totals, remaining budget, % bought | **Grocery List** "My lists" table |
 | 8 | `v_pantry_value_by_category` | Custom | Pantry value per user per category | **Pantry** "Pantry by category" table |
@@ -60,11 +60,11 @@ Code that reads each view: `backend/src/controllers/` (`mealPlanController`, `re
 | Requirement | Status | How it's met |
 |---|---|---|
 | Two or more web pages | Done | 11 pages: login, dashboard, pantry, recipes, meal planner, grocery list, ingredients, reports, account, admin, XML viewer |
-| Pages execute the 10 views and show the results as HTML tables | Done | All 10 on Reports. Views 1, 3, 4, 5, 7, 8 and 10 also appear as tables (or table columns) on the feature pages listed above. Views 6 and 9 also drive charts and the snack table |
+| Pages execute the 10 views and show the results as HTML tables | Done | All 10 on Reports. Views 1, 2, 3, 4, 5, 7, 8 and 10 also appear as tables (or table columns) on the feature pages listed above. Views 6 and 9 also drive charts and the snack table |
 | 1. Dynamic forms (validation, auto-fill suggestions) | Done | Ingredient autocomplete that fills in the unit; recipe form with add/remove ingredient rows and live calorie/cost totals; planner "Add" links that fill in date and meal; inline error messages |
 | 2. AJAX / Fetch | Done | Every page loads and saves with `fetch()` and no page reloads (`App.api` in `common.js`) |
 | 3. Data visualization (Chart.js / D3) | Done | Chart.js: calories for the week vs target (View 6), highest-protein recipes (View 9), most-planned ingredients, ingredient price history |
-| 4. Search and filter (by date, category, keyword, id) | Done | Pantry (keyword, category, status), recipes (keyword, ingredient, prep time, cost, budget-friendly, mine), meal plans (keyword, date range, meal type), ingredients (keyword, category, price, protein, usage), grocery lists (status), users (keyword, role). All filtering is done in SQL |
+| 4. Search and filter (by date, category, keyword, id) | Done | Pantry (keyword, category, status), recipes (keyword, ingredient, prep time, cost, mine), meal plans (keyword, date range, meal type), ingredients (keyword, category, price, protein, usage), grocery lists (status), users (keyword, role). All filtering is done in SQL |
 | README on installing and running (Windows or Linux) | Done | `README.md` covers Windows and Linux/macOS |
 
 ## Database used: PostgreSQL, not MySQL
@@ -86,7 +86,7 @@ The report should state this choice and the reason.
 | Interface design and usability | A plain, consistent layout. The menu follows the workflow order, the grocery page uses numbered steps, and new users get a checklist (implementation notes, section 5) |
 | Quality of code (comments, modularity) | One controller per feature, shared services, comments on every file and on each view |
 | Use of course technologies | SQL views, joins, nested/correlated queries, set operations, transactions, constraints, REST/JSON, XML + XSD, AJAX, sessions |
-| What is new / creative | Grocery lists built from the meal plan minus the pantry; "Cooked" uses up stock; snack suggestions sized to today's remaining calories; budget-friendly detection with an `ALL` subquery |
+| What is new / creative | Grocery lists built from the meal plan minus the pantry; "Cooked" uses up stock; snack suggestions sized to today's remaining calories; cheaper meal swaps (an `ANY` subquery); flagging pantry food no meal will use, against waste (`EXCEPT`) |
 
 ## Still to do by the team (not code)
 

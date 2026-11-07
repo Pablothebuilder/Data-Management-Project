@@ -4,6 +4,10 @@
 -- application-specific. Every view is displayed on the /views page.
 -- =====================================================================
 
+-- Views replaced in revision 3 (dropped so existing databases stay clean).
+DROP VIEW IF EXISTS v_budget_friendly_recipes;
+DROP VIEW IF EXISTS v_ingredients_to_buy;
+
 -- ---------------------------------------------------------------------
 -- View 1 (join of at least three tables)
 -- Meal plan details: every planned meal with the user who planned it,
@@ -32,26 +36,36 @@ GROUP BY mp.plan_id, u.user_id, u.name, mp.planned_date, mp.meal_type,
          r.recipe_id, r.title, r.prep_time_mins, r.servings;
 
 -- ---------------------------------------------------------------------
--- View 2 (nested query with ANY/ALL + GROUP BY)
--- Budget-friendly recipes: recipes whose total ingredient cost is no
--- more than the daily budget (weekly budget / 7) of ALL regular users,
--- i.e. a recipe that any user could afford in a single day.
+-- View 2 (nested query with ANY + GROUP BY)
+-- Cheaper meal swaps: for each user, the recipes whose cost per serving
+-- is lower than ANY of the meals that user has planned from today on,
+-- i.e. a recipe they could swap in to spend less. Recipes are grouped to
+-- get their cost; the ANY subquery groups the user's planned meals the
+-- same way. A user with no upcoming meals gets no rows (ANY of an empty
+-- set is false).
 -- ---------------------------------------------------------------------
-CREATE OR REPLACE VIEW v_budget_friendly_recipes AS
-SELECT r.recipe_id,
+CREATE OR REPLACE VIEW v_cheaper_swaps AS
+SELECT u.user_id,
+       u.name AS user_name,
+       r.recipe_id,
        r.title,
-       r.servings,
-       COUNT(ri.ingredient_id) AS ingredient_count,
-       ROUND(SUM(ri.required_quantity * i.estimated_unit_price), 2) AS total_cost,
-       ROUND(SUM(ri.required_quantity * i.estimated_unit_price) / COALESCE(NULLIF(r.servings, 0), 1), 2) AS cost_per_serving
-FROM Recipes r
+       ROUND(SUM(ri.required_quantity * i.estimated_unit_price) / COALESCE(NULLIF(r.servings, 0), 1), 2) AS cost_per_serving,
+       ROUND(SUM(ri.required_quantity * i.calories_per_unit) / COALESCE(NULLIF(r.servings, 0), 1), 0) AS calories_per_serving,
+       ROUND(SUM(ri.required_quantity * i.protein_g) / COALESCE(NULLIF(r.servings, 0), 1), 1) AS protein_per_serving
+FROM Users u
+CROSS JOIN Recipes r
 JOIN RecipeIngredients ri ON ri.recipe_id = r.recipe_id
 JOIN Ingredients i        ON i.ingredient_id = ri.ingredient_id
-GROUP BY r.recipe_id, r.title, r.servings
-HAVING SUM(ri.required_quantity * i.estimated_unit_price) <= ALL (
-    SELECT u.weekly_budget_limit / 7.0
-    FROM Users u
-    WHERE u.role = 'User'
+GROUP BY u.user_id, u.name, r.recipe_id, r.title, r.servings
+HAVING SUM(ri.required_quantity * i.estimated_unit_price) / COALESCE(NULLIF(r.servings, 0), 1) < ANY (
+    SELECT SUM(ri2.required_quantity * i2.estimated_unit_price) / COALESCE(NULLIF(r2.servings, 0), 1)
+      FROM MealPlans mp
+      JOIN Recipes r2            ON r2.recipe_id = mp.recipe_id
+      JOIN RecipeIngredients ri2 ON ri2.recipe_id = r2.recipe_id
+      JOIN Ingredients i2        ON i2.ingredient_id = ri2.ingredient_id
+     WHERE mp.user_id = u.user_id
+       AND mp.planned_date >= CURRENT_DATE
+     GROUP BY mp.plan_id, r2.servings
 );
 
 -- ---------------------------------------------------------------------
@@ -114,29 +128,36 @@ JOIN Ingredients i ON i.ingredient_id = COALESCE(stock.ingredient_id, used.ingre
 
 -- ---------------------------------------------------------------------
 -- View 5 (set operation: EXCEPT)
--- Ingredients to buy: for each user, the ingredients required by their
--- upcoming meal plans EXCEPT the ingredients already in their pantry.
+-- Pantry items not in your plan: for each user, the ingredients they have
+-- in stock EXCEPT the ingredients their upcoming meals will use. These are
+-- the items most likely to go to waste, so the app suggests recipes that
+-- use them (recipes_using).
 -- ---------------------------------------------------------------------
-CREATE OR REPLACE VIEW v_ingredients_to_buy AS
-SELECT need.user_id,
+CREATE OR REPLACE VIEW v_unplanned_pantry_items AS
+SELECT have.user_id,
        u.name AS user_name,
-       need.ingredient_id,
+       have.ingredient_id,
        i.name AS ingredient_name,
        i.category,
-       i.estimated_unit_price,
-       i.base_unit
+       p.quantity_on_hand,
+       p.unit,
+       ROUND(p.quantity_on_hand * i.estimated_unit_price, 2) AS estimated_value,
+       (SELECT COUNT(DISTINCT ri.recipe_id)
+          FROM RecipeIngredients ri
+         WHERE ri.ingredient_id = have.ingredient_id) AS recipes_using
 FROM (
+    SELECT p.user_id, p.ingredient_id
+      FROM PantryItems p
+     WHERE p.quantity_on_hand > 0
+    EXCEPT
     SELECT mp.user_id, ri.ingredient_id
       FROM MealPlans mp
       JOIN RecipeIngredients ri ON ri.recipe_id = mp.recipe_id
      WHERE mp.planned_date >= CURRENT_DATE
-    EXCEPT
-    SELECT p.user_id, p.ingredient_id
-      FROM PantryItems p
-     WHERE p.quantity_on_hand > 0
-) AS need
-JOIN Users u       ON u.user_id = need.user_id
-JOIN Ingredients i ON i.ingredient_id = need.ingredient_id;
+) AS have
+JOIN Users u       ON u.user_id = have.user_id
+JOIN Ingredients i ON i.ingredient_id = have.ingredient_id
+JOIN PantryItems p ON p.user_id = have.user_id AND p.ingredient_id = have.ingredient_id;
 
 -- ---------------------------------------------------------------------
 -- View 6: Daily nutrition summary

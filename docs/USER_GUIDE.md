@@ -33,6 +33,7 @@ Your pantry also updates by itself:
 
 The page also shows:
 - **Running low for planned meals**: items you have, but not enough of, for the meals you have planned (View 3).
+- **Not used by your meal plan**: things you have that none of your upcoming meals use, so they may go to waste (View 5). *Use it in* links to the recipes that contain the item, or invites you to add your own recipe if none do.
 - **Pantry by category**: how many items you have and what they are worth, per category (View 8).
 
 If an ingredient is not in the catalog, add it on the **Ingredients** page first (see section 7).
@@ -46,7 +47,7 @@ If an ingredient is not in the catalog, add it on the **Ingredients** page first
 
 Your recipes show the label *mine*. Only you (or an admin) can edit or delete them.
 
-To find recipes, use the search box and filters: an ingredient the recipe contains, maximum prep time, maximum cost per serving, **Budget-friendly only** (View 2), and **My recipes only**. *Sort by: Most ingredients in my pantry* puts recipes you can almost make already at the top.
+To find recipes, use the search box and filters: an ingredient the recipe contains, maximum prep time, maximum cost per serving, and **My recipes only**. *Sort by: Most ingredients in my pantry* puts recipes you can almost make already at the top.
 
 ## 4. Plan your meals (Meal Planner page)
 
@@ -56,9 +57,10 @@ To add a meal, do either of these:
 - Click **Add** in the cell you want (for example Tuesday / Dinner). The form at the top fills in that date and meal, so you only choose the recipe.
 - Or click **Plan** next to any recipe on the Recipes page.
 
-Each planned meal has three actions:
+Each planned meal has four actions:
 - **Cooked**: you made it. Its ingredients are taken out of your pantry and the meal leaves the plan.
 - **Edit**: change the date, meal or recipe.
+- **Cheaper swap**: lists recipes that cost less per serving than this meal and still have at least 60% of its calories (so a dinner isn't swapped for a snack), with how much you save. **Swap** replaces the meal in one click (View 2).
 - **Remove**: delete it from the plan.
 
 Use **Previous week / This week / Next week** to move around. *Search planned meals* finds meals by recipe name, date range or meal type.
@@ -68,7 +70,7 @@ Use **Previous week / This week / Next week** to move around. *Search planned me
 The page is laid out as three steps:
 
 1. **Choose the days you are shopping for.** It defaults to the next 7 days. The budget defaults to your weekly budget, and you can type a different one.
-2. **Review what you need to buy.** The app adds up the ingredients for every meal planned in those days, subtracts what is already in your pantry, and shows what is left to buy and what it costs. Items you have none of at all are marked **not in pantry** (View 5). A bar shows the total against your budget, in red if you are over. Change the days and the review updates. When it looks right, click **Create grocery list**.
+2. **Review what you need to buy.** The app adds up the ingredients for every meal planned in those days, subtracts what is already in your pantry, and shows what is left to buy and what it costs. A bar shows the total against your budget. If you are over, it says by how much and points you to **Cheaper swap** in the meal planner. Change the days and the review updates. When it looks right, click **Create grocery list**.
 3. **Shop with the list.** Tick each item as you buy it. You can add extra items or remove ones you don't need. When you are done, click **Complete list**: everything you ticked is added to your pantry, and the list is kept as a record.
 
 **My lists** at the bottom shows all your lists with their totals, budget and how much has been bought (View 7). Lists can be exported to CSV or PDF, or viewed as XML.
@@ -96,7 +98,7 @@ To add an ingredient:
 
 ## 8. Reports
 
-The **Reports** page runs each of the 10 database views and shows the result as a table. You can filter, sort, see the SQL, and export to CSV or PDF. Each view lists where it is used in the app. Regular users only see their own rows. Guests only see the catalog views (2, 4, 9). View 10 is admin-only.
+The **Reports** page runs each of the 10 database views and shows the result as a table. You can filter, sort, see the SQL, and export to CSV or PDF. Each view lists where it is used in the app. Regular users only see their own rows. Guests only see the catalog views (4, 9). View 10 is admin-only.
 
 ## 9. Admin
 

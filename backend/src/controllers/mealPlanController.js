@@ -90,6 +90,32 @@ async function remove(req, res) {
   res.json({ deleted: id });
 }
 
+// Cheaper swaps for one planned meal, from View 2 (v_cheaper_swaps): recipes
+// that cost less per serving than this meal, still have at least
+// SWAP_MIN_CALORIE_SHARE of its calories (so a dinner isn't swapped for a snack),
+// and aren't the same recipe. Cheapest first.
+const SWAP_MIN_CALORIE_SHARE = 0.6;
+
+async function swaps(req, res) {
+  const userId = targetUserId(req);
+  const id = intParam(req.params.id);
+  const [meal] = await db.query(
+    'SELECT plan_id, recipe_id, recipe_title, meal_type, planned_date, cost_per_serving, calories_per_serving FROM v_meal_plan_details WHERE plan_id = $1 AND user_id = $2',
+    [id, userId],
+  );
+  if (!meal) throw ApiError.notFound('Meal plan');
+  const rows = await db.query(
+    `SELECT recipe_id, title, cost_per_serving, calories_per_serving, protein_per_serving,
+            ROUND($3::numeric - cost_per_serving, 2) AS saving
+       FROM v_cheaper_swaps
+      WHERE user_id = $1 AND recipe_id <> $2
+        AND cost_per_serving < $3 AND calories_per_serving >= $4
+      ORDER BY cost_per_serving, title`,
+    [userId, meal.recipe_id, meal.cost_per_serving, Math.floor(meal.calories_per_serving * SWAP_MIN_CALORIE_SHARE)],
+  );
+  res.json({ meal, swaps: rows });
+}
+
 // "I cooked this": subtract the recipe's ingredients from the pantry (never
 // below zero) and remove the meal from the plan, all in one transaction.
 async function cook(req, res) {
@@ -112,4 +138,4 @@ async function cook(req, res) {
   res.json({ cooked: plan, pantryUpdated: used.length });
 }
 
-module.exports = { list, getOne, create, update, remove, cook, MEAL_TYPES };
+module.exports = { list, getOne, create, update, remove, cook, swaps, MEAL_TYPES };

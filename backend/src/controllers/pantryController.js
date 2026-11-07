@@ -46,6 +46,17 @@ async function shortfalls(req, res) {
   res.json({ shortfalls: rows });
 }
 
+// View 5: items in the pantry that no upcoming meal uses (likely to go to waste),
+// with how many recipes could use them up.
+async function unplanned(req, res) {
+  const rows = await db.query(
+    `SELECT ingredient_id, ingredient_name, category, quantity_on_hand, unit, estimated_value, recipes_using
+       FROM v_unplanned_pantry_items WHERE user_id = $1 ORDER BY estimated_value DESC, ingredient_name`,
+    [targetUserId(req)],
+  );
+  res.json({ items: rows });
+}
+
 // View 8: what the pantry is worth, per category.
 async function summary(req, res) {
   const rows = await db.query(
@@ -113,4 +124,4 @@ async function remove(req, res) {
   res.json({ deleted: id });
 }
 
-module.exports = { list, shortfalls, summary, getOne, create, update, remove };
+module.exports = { list, shortfalls, unplanned, summary, getOne, create, update, remove };

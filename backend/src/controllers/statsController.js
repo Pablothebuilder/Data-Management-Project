@@ -11,10 +11,8 @@ async function overview(req, res) {
     db.query(`SELECT recipe_id, title, protein_per_serving, calories_per_serving, cost_per_serving, protein_g_per_dollar
                 FROM v_recipe_nutrition_profile
                ORDER BY protein_per_serving DESC LIMIT 6`),
-    // View 9 + View 2: light snack ideas = recipes of at most SNACK_MAX_KCAL per
-    // serving, lowest first, flagged when budget-friendly
-    db.query(`SELECT p.recipe_id, p.title, p.calories_per_serving, p.protein_per_serving, p.cost_per_serving, p.prep_time_mins,
-                     EXISTS (SELECT 1 FROM v_budget_friendly_recipes b WHERE b.recipe_id = p.recipe_id) AS budget_friendly
+    // View 9: light snack ideas = recipes of at most SNACK_MAX_KCAL per serving, lowest first
+    db.query(`SELECT p.recipe_id, p.title, p.calories_per_serving, p.protein_per_serving, p.cost_per_serving, p.prep_time_mins
                 FROM v_recipe_nutrition_profile p
                WHERE p.calories_per_serving <= $1
                ORDER BY p.calories_per_serving ASC, p.title LIMIT 10`, [SNACK_MAX_KCAL]),

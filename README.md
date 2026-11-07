@@ -17,11 +17,11 @@ It is the term project for SOFE 3700U Data Management Systems (Group 13, Fall 20
 
 | Page | Purpose | Views used |
 |---|---|---|
-| **Dashboard** | Today's calories vs your target, light snack ideas that fit, items running low, calories for the week, highest-protein recipes, most-planned ingredients. New users see a getting-started checklist | 1, 2, 3, 6, 9, 10 |
-| **Pantry** | Record what you have. See what will run out before your planned meals and what your pantry is worth by category | 3, 8 |
-| **Recipes** | Browse and filter recipes with calories, protein and cost per serving. Add your own and plan them straight away | 2 |
-| **Meal Planner** | A day-by-meal table for the next 7 days. Mark meals as *Cooked* to use up pantry stock | 1 |
-| **Grocery List** | Step 1: choose the days. Step 2: review needed minus pantry. Step 3: shop, tick items off, then complete the list to restock the pantry | 5, 7 |
+| **Dashboard** | Today's calories vs your target, light snack ideas that fit, items running low, calories for the week, highest-protein recipes, most-planned ingredients. New users see a getting-started checklist | 1, 3, 6, 9, 10 |
+| **Pantry** | Record what you have. See what will run out before your planned meals, what you have that **no planned meal uses** (so it doesn't go to waste), and what your pantry is worth by category | 3, 5, 8 |
+| **Recipes** | Browse and filter recipes with calories, protein and cost per serving. Add your own and plan them straight away | (9 for export) |
+| **Meal Planner** | A day-by-meal table for the next 7 days. *Cheaper swap* suggests cheaper recipes with similar calories. *Cooked* uses up pantry stock | 1, 2 |
+| **Grocery List** | Step 1: choose the days. Step 2: review needed minus pantry (over budget? it points you to cheaper swaps). Step 3: shop, tick items off, then complete the list to restock the pantry | 7 |
 | **Ingredients** | The shared ingredient catalog, with how many recipes use each one. Import real products from Open Food Facts | 4 |
 | **Reports** | All 10 views as tables, with their SQL and where each is used in the app | 1-10 |
 | **Admin** | User management with activity per user | 10 |
@@ -167,11 +167,11 @@ Everything is under `/api` and uses JSON. All endpoints except the login ones ne
 | My account | `GET /users/me`, `PUT /users/me` |
 | Users (Admin) | `GET /users` (includes View 10 activity), `GET/PUT/DELETE /users/:id`, `POST /users` |
 | Ingredients | `GET /ingredients?q=&category=&maxPrice=&minProtein=&usage=used\|unused\|unstocked&sort=` (includes View 4), `GET /ingredients/categories`, `GET /ingredients/:id`, `GET /ingredients/:id/prices`, `POST /ingredients`, `PUT/DELETE /ingredients/:id` (Admin) |
-| Recipes | `GET /recipes?q=&ingredientId=&maxPrep=&maxCost=&budget=1&mine=1&sort=` (View 2 flag and filter), `GET /recipes/:id`, `POST /recipes`, `PUT/DELETE /recipes/:id` (author or Admin) |
-| Pantry | `GET /pantry?q=&category=&status=short\|empty&sort=`, `GET /pantry/shortfalls` (View 3), `GET /pantry/summary` (View 8), `POST /pantry`, `GET/PUT/DELETE /pantry/:id` |
-| Meal plans | `GET /meal-plans?from=&to=&mealType=&q=` (View 1), `POST /meal-plans`, `GET/PUT/DELETE /meal-plans/:id`, `POST /meal-plans/:id/cook` |
-| Grocery lists | `GET /grocery-lists?status=` (View 7), `GET /grocery-lists/preview?from=&to=` (View 5 flag), `POST /grocery-lists/generate`, `GET/PUT/DELETE /grocery-lists/:id`, `POST /grocery-lists/:id/complete`, `POST/PUT/DELETE /grocery-lists/:id/items[/:itemId]`, `GET /grocery-lists/:id/xml` |
-| Dashboard | `GET /stats/dashboard` (Views 1, 3, 6, 10), `GET /stats/overview` (Views 2, 9) |
+| Recipes | `GET /recipes?q=&ingredientId=&maxPrep=&maxCost=&mine=1&sort=`, `GET /recipes/:id`, `POST /recipes`, `PUT/DELETE /recipes/:id` (author or Admin) |
+| Pantry | `GET /pantry?q=&category=&status=short\|empty&sort=`, `GET /pantry/shortfalls` (View 3), `GET /pantry/unplanned` (View 5), `GET /pantry/summary` (View 8), `POST /pantry`, `GET/PUT/DELETE /pantry/:id` |
+| Meal plans | `GET /meal-plans?from=&to=&mealType=&q=` (View 1), `POST /meal-plans`, `GET/PUT/DELETE /meal-plans/:id`, `POST /meal-plans/:id/cook`, `GET /meal-plans/:id/swaps` (View 2) |
+| Grocery lists | `GET /grocery-lists?status=` (View 7), `GET /grocery-lists/preview?from=&to=`, `POST /grocery-lists/generate`, `GET/PUT/DELETE /grocery-lists/:id`, `POST /grocery-lists/:id/complete`, `POST/PUT/DELETE /grocery-lists/:id/items[/:itemId]`, `GET /grocery-lists/:id/xml` |
+| Dashboard | `GET /stats/dashboard` (Views 1, 3, 6, 10), `GET /stats/overview` (View 9) |
 | Reports | `GET /views`, `GET /views/:name-or-number` |
 | Export | `GET /export/:dataset?format=csv\|pdf` (pantry, ingredients, recipes, meal-plans, grocery-list&id=, or any view) |
 | Open Food Facts | `GET /external/products?q=`, `POST /external/import`, `POST /external/prices/:ingredientId` |

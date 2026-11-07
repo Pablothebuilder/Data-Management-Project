@@ -11,6 +11,10 @@
   // "Contains ingredient" filter uses the same autocomplete.
   let filterIngredient = null;
   await App.ingredientPicker($('#f-ing'), (ing) => { filterIngredient = ing; load(); });
+  // Links like /recipes?ingredient=21 (from the Pantry page) pre-select an ingredient.
+  const wantedId = Number(new URLSearchParams(window.location.search).get('ingredient'));
+  const wanted = wantedId ? all.find((i) => i.ingredient_id === wantedId) : null;
+  if (wanted) { $('#f-ing').value = wanted.name; filterIngredient = wanted; }
 
   const canEdit = (r) => App.isAdmin() || (App.canWrite() && r.created_by_user === user.user_id);
 
@@ -18,7 +22,6 @@
   function render(recipes) {
     $('#table').replaceChildren(table(recipes, [
       { key: 'title', label: 'Recipe', render: (r) => h('span', {}, r.title,
-        r.budget_friendly ? h('span', { class: 'tag' }, 'budget-friendly') : null,
         App.canWrite() && r.created_by_user === user.user_id ? h('span', { class: 'tag' }, 'mine') : null) },
       { key: 'author', label: 'By' },
       { key: 'calories_per_serving', label: 'kcal / serving', class: 'num' },
@@ -44,7 +47,6 @@
           maxCost: $('#f-cost').value,
           sort: $('#f-sort').value,
           mine: $('#f-mine').checked ? '1' : '',
-          budget: $('#f-budget').checked ? '1' : '',
         },
       });
       render(recipes);
@@ -188,6 +190,6 @@
   $('#new-recipe').addEventListener('click', () => editor(null));
   $('#f-q').addEventListener('input', debounce(load));
   ['#f-prep', '#f-cost'].forEach((s) => $(s).addEventListener('input', debounce(load)));
-  ['#f-sort', '#f-mine', '#f-budget'].forEach((s) => $(s).addEventListener('change', load));
+  ['#f-sort', '#f-mine'].forEach((s) => $(s).addEventListener('change', load));
   load();
 })();

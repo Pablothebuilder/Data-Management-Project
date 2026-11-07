@@ -32,6 +32,7 @@
       h('div', { class: 'actions' },
         h('button', { class: 'link-btn small', type: 'button', onclick: () => cook(p) }, 'Cooked'),
         h('button', { class: 'link-btn small', type: 'button', onclick: () => edit(p) }, 'Edit'),
+        h('button', { class: 'link-btn small', type: 'button', onclick: () => cheaperSwap(p) }, 'Cheaper swap'),
         h('button', { class: 'link-btn small', type: 'button', onclick: () => remove(p) }, 'Remove')));
   }
 
@@ -94,6 +95,38 @@
       await api(`/meal-plans/${p.plan_id}`, { method: 'DELETE' });
       toast('Meal removed');
       refresh();
+    } catch (err) {
+      showError(err);
+    }
+  }
+
+  // View 2 (v_cheaper_swaps): offer cheaper recipes with similar calories.
+  async function cheaperSwap(p) {
+    let dlg = null;
+    try {
+      const { meal, swaps } = await api(`/meal-plans/${p.plan_id}/swaps`);
+      const doSwap = async (r) => {
+        try {
+          await api(`/meal-plans/${p.plan_id}`, { method: 'PUT', body: { recipe_id: r.recipe_id } });
+          dlg.close();
+          toast(`Swapped ${meal.recipe_title} for ${r.title}, saving ${money(r.saving)} per serving`);
+          refresh();
+        } catch (err) {
+          showError(err);
+        }
+      };
+      const body = h('div', {},
+        h('p', {}, `${meal.recipe_title} costs ${money(meal.cost_per_serving)} and has ${meal.calories_per_serving} kcal per serving. `
+          + 'These recipes cost less and still have at least 60% of the calories.'),
+        table(swaps, [
+          { key: 'title', label: 'Recipe' },
+          { key: 'cost_per_serving', label: 'Cost / serving', class: 'num' },
+          { key: 'saving', label: 'You save', class: 'num', render: (r) => money(r.saving) },
+          { key: 'calories_per_serving', label: 'kcal', class: 'num' },
+          { key: 'protein_per_serving', label: 'Protein', class: 'num', render: (r) => `${r.protein_per_serving} g` },
+          { key: 's', label: '', render: (r) => h('button', { class: 'btn btn-small', type: 'button', onclick: () => doSwap(r) }, 'Swap') },
+        ], { empty: 'This is already one of the cheapest meals of its size. No cheaper swap found.' }));
+      dlg = modal(`Cheaper swap for ${meal.recipe_title}`, body, { wide: true });
     } catch (err) {
       showError(err);
     }
