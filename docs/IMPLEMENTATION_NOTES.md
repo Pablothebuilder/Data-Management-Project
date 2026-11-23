@@ -123,11 +123,13 @@ Both keep the query type the course requires. Three pantry rows were added to th
 
 ### 5.1 Plain design
 The first design looked like a commercial product (rounded cards, shadows, gradients, coloured pills, emoji). The course grades the database and the views, not the visual design. A UI a student team would plausibly build is also more honest and easier to maintain. So the stylesheet was rewritten:
-- Arial; white background; 1px grey borders.
+- System font; white background; 1px grey borders.
 - Square buttons; data in ordinary bordered tables.
 - Labels are plain text, and one dark green is used for links and buttons.
 
 All pages still work on a phone.
+
+Further work added colour without going to far. Colour comes from lines and text. A green rule across the top of the nav, cards, dialogs and the login box; green tinted table headers; coloured status text and row markers (amber for low, red for empty or over budget); a visible keyboard focus ring; and a chart palette that matches the stylesheet (`App.COLORS` in `common.js`). Every colour is a variable at the top of `style.css`.
 
 ### 5.2 Workflow changes
 Each change came from walking through the target scenario: *a new user stocks the pantry, adds a few of their own recipes, plans the week, generates a grocery list, and later adds a light snack within their calorie goal.*

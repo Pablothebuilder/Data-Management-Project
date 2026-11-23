@@ -6,7 +6,7 @@
   $('#greeting').textContent = user.role === 'Guest' ? 'Welcome, guest' : `Hello, ${user.name.split(' ')[0]}`;
   $('#subtitle').textContent = user.role === 'Guest'
     ? 'You are browsing without an account. Create one to track your own pantry and meals.'
-    : 'Your day at a glance.';
+    : 'Your overview.';
 
   let remaining = null; // calories left today (null = no target set)
 
@@ -50,7 +50,7 @@
 
     // Calories next 7 days (View 6)
     const target = d.profile.target_calories;
-    $('#cal-target').textContent = target ? `target ${target} kcal/day` : '';
+    $('#cal-target').textContent = target ? `Target ${target} kcal/day` : '';
     chart($('#chart-calories'), {
       type: 'bar',
       data: {
