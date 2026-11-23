@@ -296,9 +296,18 @@ const App = (() => {
   }
 
   // Chart.js shared defaults (Chart is loaded from /vendor/chart.umd.min.js).
-  const COLORS = ['#1d5c3a', '#888888', '#4a78a8', '#b00020', '#c79100', '#5b8f6e', '#7a5c99', '#444444'];
+  // Matches the colours in style.css: green, blue, amber, red, then extras.
+  const COLORS = ['#1f7a4d', '#2b6cb0', '#d69e2e', '#c0262d', '#6b46c1', '#0f766e', '#b83280', '#5b6675'];
+  let chartDefaultsSet = false;
   function chart(canvas, config) {
     if (!window.Chart) return null;
+    if (!chartDefaultsSet) {
+      const d = window.Chart.defaults;
+      d.font.family = getComputedStyle(document.body).fontFamily;
+      d.color = '#5b6675';
+      d.borderColor = '#e5e9ef';
+      chartDefaultsSet = true;
+    }
     const existing = window.Chart.getChart(canvas);
     if (existing) existing.destroy();
     return new window.Chart(canvas, {
