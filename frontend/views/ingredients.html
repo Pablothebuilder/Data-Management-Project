@@ -12,7 +12,7 @@
     <div class="page-head">
       <div>
         <h1>Ingredient Catalog</h1>
-        <p>The shared list of ingredients that pantries, recipes and grocery lists are built from. Prices and calories are per unit.</p>
+        <p>The list of ingredients that your pantry, recipes and grocery lists use.</p>
       </div>
       <div class="actions">
         <span id="export"></span>
@@ -23,7 +23,7 @@
     <div class="card writer-only">
       <div class="card-head">
         <h2>Import from Open Food Facts</h2>
-        <span class="muted small">Search a real product database and add the product to the catalog</span>
+        <span class="muted small">Search a product database and add the product to the catalog</span>
       </div>
       <form id="off-form" class="filters" novalidate>
         <label style="max-width:none;flex:3">Product search <input name="q" required minlength="2" maxlength="100" placeholder="e.g. rolled oats, greek yogurt, peanut butter"></label>
@@ -52,7 +52,6 @@
           </select></label>
       </div>
       <div id="table"></div>
-      <p class="muted small">"Used in" and "Households" come from View 4 (ingredient usage overview, a FULL JOIN of pantry stock and recipe usage).</p>
     </div>
   </main>
   <script src="/vendor/chart.umd.min.js"></script>

@@ -42,7 +42,7 @@
       current = data.view;
       rows = data.rows;
       $('#view-title').textContent = `View ${current.number}: ${current.title}`;
-      $('#view-req').textContent = `Requirement: ${current.requirement} · ${current.scope === 'user' && !App.isAdmin() ? 'showing your rows only' : 'all rows'}`;
+      $('#view-req').textContent = `Requirement: ${current.requirement} · ${current.scope === 'user' && !App.isAdmin() ? 'showing your allowed rows only' : 'all rows'}`;
       $('#view-desc').textContent = current.description;
       $('#view-used').replaceChildren(...current.usedIn.map((u) => h('li', {}, u)));
       $('#view-sql').textContent = current.sql;
