@@ -186,6 +186,10 @@ test('meal plans: validation, CRUD and cooking consumes pantry', async () => {
   const plan = await c.post('/api/meal-plans', { recipe_id: 2, planned_date: '2026-11-10', meal_type: 'dinner' });
   assert.equal(plan.status, 201);
   assert.equal(plan.data.plan.meal_type, 'Dinner');
+  const duplicate = await c.post('/api/meal-plans', { recipe_id: 2, planned_date: '2026-11-10', meal_type: 'Dinner' });
+  assert.equal(duplicate.status, 409, 'database rejects the exact same meal-plan slot');
+  assert.equal(duplicate.data.error.message, 'A record with these values already exists');
+  assert.equal(duplicate.data.error.details[0].constraint, 'uq_mealplans_slot');
 
   const before = (await c.get('/api/pantry?q=rice')).data.items[0].quantity_on_hand;
   const cooked = await c.post(`/api/meal-plans/${plan.data.plan.plan_id}/cook`);
