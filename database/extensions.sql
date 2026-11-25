@@ -41,3 +41,19 @@ CREATE INDEX IF NOT EXISTS idx_recipeingredients_ingredient ON RecipeIngredients
 CREATE INDEX IF NOT EXISTS idx_grocerylists_user ON GroceryLists (user_id);
 CREATE INDEX IF NOT EXISTS idx_listitems_list ON ListItems (list_id);
 CREATE INDEX IF NOT EXISTS idx_pricehistory_ingredient ON IngredientPriceHistory (ingredient_id, fetched_at);
+
+-- 6. Prevent duplicate recipes in the same user's meal-plan slot.
+--    Add the constraint only if it is not already present.
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'uq_mealplans_slot'
+          AND conrelid = 'MealPlans'::regclass
+    ) THEN
+        ALTER TABLE MealPlans
+            ADD CONSTRAINT uq_mealplans_slot
+            UNIQUE (user_id, planned_date, meal_type, recipe_id);
+    END IF;
+END $$;
