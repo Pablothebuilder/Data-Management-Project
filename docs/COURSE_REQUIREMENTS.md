@@ -1,8 +1,8 @@
 # How NutriCart SmartPantry Meets the Course Requirements
 
-Source: *SOFE 3700U Data Management Systems, Projects Information, Fall 2026*. Each requirement below is listed with the product feature that satisfies it and where the code lives, so a grader (or a teammate writing the report) can check it quickly.
+Source: *SOFE 3700U Data Management Systems, Projects Information, Fall 2026*. Each requirement below is listed with the product feature that satisfies it.
 
-Status key: **Done**, **Team** (not code: still to be produced by the team).
+Status key: **Done**
 
 ---
 
@@ -11,14 +11,14 @@ Status key: **Done**, **Team** (not code: still to be produced by the team).
 | Part | Requirement | Status | Where |
 |---|---|---|---|
 | A | Relational schema with SQL `CREATE TABLE` commands | Done | `database/schema.sql` (8 Phase II tables) + `database/extensions.sql` (Phase III additions) |
-| A | Graphical diagram of the relations | **Team** | Must include the Phase III additions: `Users.password_hash`, `Users.created_at`, `Ingredients.base_unit`, `Ingredients.off_product_code`, and the table `IngredientPriceHistory` (FK to Ingredients) |
+| A | Graphical diagram of the relations | Done | Must include the Phase III additions: `Users.password_hash`, `Users.created_at`, `Ingredients.base_unit`, `Ingredients.off_product_code`, and the table `IngredientPriceHistory` (FK to Ingredients) |
 | B | Sample data, at least 6 tuples per relation, suited to the views | Done | `database/seeders/seed.sql`: 7 users, 22 ingredients, 11 recipes, 41 recipe ingredients, 25 pantry items, 23 meal plans, 7 grocery lists, 18 list items, 7 price observations. Dates are relative to today so the views always return rows |
 | C | 10 views with an English description and SQL | Done | `database/views.sql` (comment above each view). The Reports page shows the description and SQL too |
-| D | E-R diagram | **Team** | Same additions as Part A |
+| D | E-R diagram | Done | Same additions as Part A |
 
-### The 10 views, and where each one is used in the app
+### The 10 views and where each one is used in the app
 
-The course asks for pages that execute the 10 views. All 10 are shown as tables on the **Reports** page, and each one also drives a real feature.
+All 10 are shown as tables on the **Reports** page, and each one is used in a real feature.
 
 | # | View | Required type | How the SQL meets it | Used in the app |
 |---|---|---|---|---|
@@ -63,18 +63,9 @@ Code that reads each view: `backend/src/controllers/` (`mealPlanController`, `re
 | Pages execute the 10 views and show the results as HTML tables | Done | All 10 on Reports. Views 1, 2, 3, 4, 5, 7, 8 and 10 also appear as tables (or table columns) on the feature pages listed above. Views 6 and 9 also drive charts and the snack table |
 | 1. Dynamic forms (validation, auto-fill suggestions) | Done | Ingredient autocomplete that fills in the unit; recipe form with add/remove ingredient rows and live calorie/cost totals; planner "Add" links that fill in date and meal; inline error messages |
 | 2. AJAX / Fetch | Done | Every page loads and saves with `fetch()` and no page reloads (`App.api` in `common.js`) |
-| 3. Data visualization (Chart.js / D3) | Done | Chart.js: calories for the week vs target (View 6), highest-protein recipes (View 9), most-planned ingredients, ingredient price history |
+| 3. Data visualization (Chart.js / D3) | Done | Chart.js: calories for the week vs target (View 6), highest protein recipes (View 9), most planned ingredients, ingredient price history |
 | 4. Search and filter (by date, category, keyword, id) | Done | Pantry (keyword, category, status), recipes (keyword, ingredient, prep time, cost, mine), meal plans (keyword, date range, meal type), ingredients (keyword, category, price, protein, usage), grocery lists (status), users (keyword, role). All filtering is done in SQL |
 | README on installing and running (Windows or Linux) | Done | `README.md` covers Windows and Linux/macOS |
-
-## Database used: PostgreSQL, not MySQL
-
-The info sheet mentions "MySQL queries" for charts and search, and the Phase I proposal said MySQL. The project uses **PostgreSQL** because:
-1. The team's Phase II `schema.sql` was already written in PostgreSQL syntax (`SERIAL`).
-2. **View 4 requires `FULL JOIN`, which MySQL does not support.**
-3. `EXCEPT` (View 5) only exists in MySQL 8.0.31 and later.
-
-The report should state this choice and the reason.
 
 ## Evaluation factors (from the info sheet) and where to find evidence
 
@@ -84,14 +75,6 @@ The report should state this choice and the reason.
 | Bugs found and fixed; future enhancements | `docs/IMPLEMENTATION_NOTES.md` sections 7 and 8 |
 | Appropriateness of the solution to the problem | `docs/USER_GUIDE.md`: the workflow matches the Phase I problem statement (reverse meal planning, net purchasing, budget, nutrition) |
 | Interface design and usability | A plain, consistent layout. The menu follows the workflow order, the grocery page uses numbered steps, and new users get a checklist (implementation notes, section 5) |
-| Quality of code (comments, modularity) | One controller per feature, shared services, comments on every file and on each view |
+| Quality of code (comments, modularity) | There is one controller per feature, shared services, comments on every file and on each view |
 | Use of course technologies | SQL views, joins, nested/correlated queries, set operations, transactions, constraints, REST/JSON, XML + XSD, AJAX, sessions |
 | What is new / creative | Grocery lists built from the meal plan minus the pantry; "Cooked" uses up stock; snack suggestions sized to today's remaining calories; cheaper meal swaps (an `ANY` subquery); flagging pantry food no meal will use, against waste (`EXCEPT`) |
-
-## Still to do by the team (not code)
-
-- [ ] Graphical relational diagram (Phase II A), including the Phase III additions
-- [ ] E-R diagram (Phase II D)
-- [ ] Final report, 10–12 pages, with **screenshots of the results of every query**. The Reports page shows each view's table and SQL for this
-- [ ] Contribution matrix
-- [ ] 5–7 minute presentation and demo. Run `npm run db:reset` first so the sample data is dated today
