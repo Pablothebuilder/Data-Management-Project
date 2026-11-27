@@ -32,9 +32,9 @@ Your pantry also updates by itself:
 - **Marking a meal as Cooked** in the meal planner uses up that recipe's ingredients.
 
 The page also shows:
-- **Running low for planned meals**: items you have, but not enough of, for the meals you have planned (View 3).
-- **Not used by your meal plan**: things you have that none of your upcoming meals use, so they may go to waste (View 5). *Use it in* links to the recipes that contain the item, or invites you to add your own recipe if none do.
-- **Pantry by category**: how many items you have and what they are worth, per category (View 8).
+- **Running low for planned meals**: items you have, but not enough of, for the meals you have planned.
+- **Not used by your meal plan**: things you have that none of your upcoming meals use, so they may go to waste. *Use it in* links to the recipes that contain the item, or invites you to add your own recipe if none do.
+- **Pantry by category**: how many items you have and what they are worth, per category.
 
 If an ingredient is not in the catalog, add it on the **Ingredients** page first (see section 7).
 
@@ -51,7 +51,7 @@ To find recipes, use the search box and filters: an ingredient the recipe contai
 
 ## 4. Plan your meals (Meal Planner page)
 
-The planner is a table: one row per day for the next 7 days, and one column each for Breakfast, Lunch, Dinner and Snack. The right-hand column shows the day's calories against your target. A day over target is shown in red.
+The planner is a table: one row for each day for the next 7 days, and one column each for Breakfast, Lunch, Dinner and Snack. The right-hand column shows the day's calories against your target. A day over its target is shown in red.
 
 To add a meal, do either of these:
 - Click **Add** in the cell you want (for example Tuesday / Dinner). The form at the top fills in that date and meal, so you only choose the recipe.
@@ -60,7 +60,7 @@ To add a meal, do either of these:
 Each planned meal has four actions:
 - **Cooked**: you made it. Its ingredients are taken out of your pantry and the meal leaves the plan.
 - **Edit**: change the date, meal or recipe.
-- **Cheaper swap**: lists recipes that cost less per serving than this meal and still have at least 60% of its calories (so a dinner isn't swapped for a snack), with how much you save. **Swap** replaces the meal in one click (View 2).
+- **Cheaper swap**: lists recipes that cost less per serving than this meal and still have at least 60% of its calories (so a dinner isn't swapped for a snack), with how much you save. **Swap** replaces the meal in one click.
 - **Remove**: delete it from the plan.
 
 Use **Previous week / This week / Next week** to move around. *Search planned meals* finds meals by recipe name, date range or meal type.
@@ -88,7 +88,7 @@ The page is laid out as three steps:
 
 ## 7. The ingredient catalog (Ingredients page)
 
-All users share one catalog. For each ingredient it shows the unit, price, calories and macros per unit, plus **Used in** (how many recipes use it) and **Households** (how many users have it in their pantry), both from View 4. The **Usage** filter finds ingredients used in recipes, not used in any recipe, or needed by recipes but stocked by nobody.
+All users share one catalog. For each ingredient it shows the unit, price, calories and macros per unit, plus **Used in** (how many recipes use it) and **Households** (how many users have it in their pantry). The **Usage** filter finds ingredients used in recipes, not used in any recipe, or needed by recipes but stocked by nobody.
 
 To add an ingredient:
 - **Import from Open Food Facts**: search for a real product (for example "greek yogurt"), click **Import**, check the name and category, and save. Nutrition per 100 g comes from Open Food Facts. The price comes from Open Prices if any have been recorded, or you can type one.
@@ -98,8 +98,8 @@ To add an ingredient:
 
 ## 8. Reports
 
-The **Reports** page runs each of the 10 database views and shows the result as a table. You can filter, sort, see the SQL, and export to CSV or PDF. Each view lists where it is used in the app. Regular users only see their own rows. Guests only see the catalog views (4, 9). View 10 is admin-only.
+The **Reports** page runs each of the 10 database views for demonstration and shows the result as a table. You can filter, sort, see the SQL, and export to CSV or PDF. Each view lists where it is used in the app. Regular users only see their own rows, guests only see the catalog views and view 10 is admin only.
 
 ## 9. Admin
 
-Admins see an **Admin** page with every user and their activity (pantry items, meals in the next 7 days, active lists and recipes, from View 10). There they can create users, change roles and budgets, reset passwords, and delete users. Admins cannot delete themselves or remove their own admin role.
+Admins see an **Admin** page with every user and their activity (pantry items, meals in the next 7 days, active lists and recipes). There they can create users, change roles and budgets, reset passwords, and delete users. Admins cannot delete themselves or remove their own admin role.

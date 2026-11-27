@@ -1,6 +1,6 @@
 # Contributing to NutriCart SmartPantry
 
-This guide is for teammates changing the code. It covers how to get running, how the pieces fit together, where to make common changes, and the rules that keep the app working. For *using* the app, see [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
+This guide is for anyone changing the code. It covers how to get running, how the pieces fit together, where to make common changes, and the rules that keep the app working. For *using* the app, see [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
 
 ---
 
@@ -146,7 +146,6 @@ errors anywhere ------------------------------> middleware/errorHandler.js --> {
 1. Do **not** edit `schema.sql`. Add to `database/extensions.sql` using `ALTER TABLE ... ADD COLUMN IF NOT EXISTS ...` or `CREATE TABLE IF NOT EXISTS ...`. This file runs on every start, so it must be safe to run twice.
 2. Add sample rows to `seeders/seed.sql` if needed (every table needs 6+ rows for the course).
 3. Run `npm run db:reset`.
-4. Tell whoever owns the diagrams: the relational and ER diagrams must match.
 
 ### Change sample data
 Edit `database/seeders/seed.sql`, then run `npm run db:reset`. Use `CURRENT_DATE + n` for dates so the demo always shows "this week". The tests depend on some seed values (e.g. Sam has 7 pantry items), so run `npm test` afterwards.
@@ -177,7 +176,7 @@ Route-level permissions are in `routes/api.js` (`requireWriter` = User or Admin;
 3. Make the change, then run `npm test` and `npm run check` in `backend/`.
 4. Commit with a clear message: what changed and why.
 5. Push: `git push -u origin yourname/short-description`, then open a **pull request** on GitHub and fill in the template.
-6. Another teammate reviews and merges. Don't push straight to `main`.
+6. Someone will review and merge. Don't push straight to `main`.
 
 If someone changed `.sql` files in a merge you pulled, run `npm run db:reset`.
 
