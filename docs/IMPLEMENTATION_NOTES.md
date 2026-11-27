@@ -36,7 +36,7 @@ On start, the server first checks that the `public` schema is usable, then wheth
 - **PostgreSQL server:** it drops and re-creates the `public` schema.
 
 ### 1.6 Static HTML pages and a JSON API
-Each page is a plain HTML file (`frontend/views`) with one script (`frontend/public/js`) that talks to the API with `fetch`. This keeps web pages and web services separate, and features goes through the API the tests use. The server still checks login and role before it sends a page.
+Each page is a plain HTML file (`frontend/views`) with one script (`frontend/public/js`) that talks to the API with `fetch`. This keeps web pages and web services separate, and features go through the API the tests use. The server still checks login and role before it sends a page.
 
 ### 1.7 Plain JavaScript, no framework; Chart.js served locally
 A small helper file (`common.js`) provides `api()`, an element builder, `table()`, form validation, a dialog and messages. Data is inserted as text and not as HTML, which prevents XSS. Chart.js is served from `node_modules`, so charts work offline and the Content-Security-Policy can allow only same origin scripts.
@@ -133,7 +133,7 @@ Each change came from walking through the target scenario: *a new user stocks th
 - **Light snack ideas**: recipes of **≤ 300 kcal per serving**, lowest first, with a "Fits today?" column and an **Add as snack today** button. 300 kcal was chosen as a typical snack size. Without a cap, full meals filled the list (bug 8). The cap is `SNACK_MAX_KCAL` in `statsController.js`.
 - **Running low for planned meals**.
 - **Calories planned, next 7 days** chart.
-- **Highest protein recipes** and **most-planned ingredients** charts. Both were kept because the user found them useful.
+- **Highest protein recipes** and **most-planned ingredients** charts.
 
 ---
 

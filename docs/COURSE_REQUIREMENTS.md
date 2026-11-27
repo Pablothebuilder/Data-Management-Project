@@ -18,7 +18,7 @@ Status key: **Done**
 
 ### The 10 views and where each one is used in the app
 
-Need pages that execute the 10 views. All 10 are shown as tables on the **Reports** page, and each one is used in a real feature.
+All 10 are shown as tables on the **Reports** page, and each one is used in a real feature.
 
 | # | View | Required type | How the SQL meets it | Used in the app |
 |---|---|---|---|---|
